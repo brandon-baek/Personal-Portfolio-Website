@@ -1199,7 +1199,7 @@
 
           if (targetSection) {
              let offsetTop = targetSection.offsetTop;
-             if(sectionId !== 'home') offsetTop -= 10; // Adjust offset slightly for non-home sections
+             if(sectionId !== 'home') offsetTop += 80; // Adjust offset slightly for non-home sections
 
              // Ensure only target section is active before scrolling
              sections.forEach(s => s.classList.toggle('active', s.id === sectionId));
