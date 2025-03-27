@@ -1,0 +1,1322 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Brandon Baek</title>
+  <!-- External Libraries -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.11.5/gsap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.11.5/ScrollTrigger.min.js"></script>
+  <style>
+    :root {
+      --dark-green: #1a3a2a;
+      --medium-green: #2a4a3a;
+      --light-green: #3a5a4a;
+      --off-white: #f5f5f0;
+      --transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+      --font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: var(--font-family);
+    }
+
+    body {
+      background-color: var(--off-white);
+      color: var(--dark-green);
+      transition: background-color 0.4s ease, color 0.4s ease;
+      overflow-x: hidden;
+      font-weight: 400;
+      line-height: 1.6;
+    }
+
+    body:not(.light-mode) {
+      background-color: var(--dark-green);
+      color: var(--off-white);
+    }
+
+    .container {
+      width: 100%;
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 0 20px;
+    }
+
+    h1, h2, h3, h4, .nav-item .label, .social-name, .project-title, .detail-card h3, .about-toggle-btn {
+        font-weight: 600;
+    }
+
+    .loader {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: var(--off-white);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 9999;
+      transition: opacity 0.5s ease-out, visibility 0.5s ease-out;
+      visibility: visible;
+      opacity: 1;
+    }
+    body:not(.light-mode) .loader {
+        background-color: var(--dark-green);
+    }
+    .loader.hidden {
+        opacity: 0;
+        visibility: hidden;
+    }
+
+    .loader-circle {
+      width: 50px;
+      height: 50px;
+      border: 3px solid rgba(58, 90, 74, 0.2);
+      border-top: 3px solid var(--dark-green);
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+    }
+    body:not(.light-mode) .loader-circle {
+        border-top-color: var(--off-white);
+        border-color: rgba(245, 245, 240, 0.2);
+    }
+
+    @keyframes spin {
+      to {
+        transform: rotate(360deg);
+      }
+    }
+
+    .landing {
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      text-align: center;
+    }
+
+    .landing h1 {
+      font-size: clamp(3rem, 10vw, 8rem);
+      letter-spacing: -0.03em;
+      opacity: 0;
+      transform: translateY(30px);
+    }
+
+    .navigation {
+      position: fixed;
+      bottom: 40px;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      gap: 10px;
+      z-index: 1000;
+      padding: 10px 15px;
+      border-radius: 50px;
+
+      background-color: rgba(245, 245, 240, 0.6);
+      border: 1px solid rgba(26, 58, 42, 0.1);
+      backdrop-filter: blur(12px) saturate(180%);
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
+      transition: var(--transition), background-color 0.4s ease, border-color 0.4s ease;
+    }
+
+    body:not(.light-mode) .navigation {
+      background-color: rgba(42, 74, 58, 0.6);
+      border: 1px solid rgba(245, 245, 240, 0.1);
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+    }
+
+    .nav-item {
+      position: relative;
+      padding: 10px;
+      width: 40px;
+      height: 40px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 50%;
+      cursor: pointer;
+      overflow: hidden;
+      transition: var(--transition), background-color 0.3s ease, width 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+      will-change: transform, width;
+    }
+
+    .hover-tilt {
+        transition: var(--transition), transform 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    }
+    .hover-tilt:hover {
+      transform: translateY(-4px) rotate(1.5deg);
+      box-shadow: 0 6px 15px rgba(0, 0, 0, 0.15);
+    }
+     .navigation .hover-tilt:hover {
+        box-shadow: none;
+     }
+
+    .nav-item:hover {
+      width: 140px;
+
+      background-color: rgba(58, 90, 74, 0.2);
+      border-radius: 50px;
+    }
+
+    body:not(.light-mode) .nav-item:hover {
+      background-color: var(--light-green);
+    }
+
+    .nav-item .icon {
+      width: 20px;
+      height: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: absolute;
+      left: 10px;
+      transition: var(--transition), stroke 0.4s ease;
+
+      stroke: var(--dark-green);
+    }
+
+    body:not(.light-mode) .nav-item .icon {
+        stroke: var(--off-white);
+    }
+
+    .nav-item.active { /* Style for active nav item (optional) */ }
+    body:not(.light-mode) .nav-item.active { /* Style for active nav item (dark mode, optional) */ }
+    .nav-item.active .icon { /* Style for active icon (optional) */ }
+    body:not(.light-mode) .nav-item.active .icon { /* Style for active icon (dark mode, optional) */ }
+
+    .nav-item:hover .icon {
+      transform: scale(1.1);
+    }
+
+    .nav-item .label {
+      position: absolute;
+      left: 45px;
+      opacity: 0;
+      white-space: nowrap;
+      transition: opacity 0.3s ease 0.1s, color 0.4s ease;
+      font-size: 14px;
+
+      color: var(--dark-green);
+    }
+
+     body:not(.light-mode) .nav-item .label {
+        color: var(--off-white);
+     }
+
+    .nav-item:hover .label {
+      opacity: 1;
+    }
+
+    section {
+      padding: 120px 0;
+      opacity: 0;
+      transform: translateY(40px);
+      transition: opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1), transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+      will-change: opacity, transform;
+      pointer-events: none;
+    }
+
+    section.active {
+      opacity: 1;
+      transform: translateY(0);
+      pointer-events: auto;
+    }
+
+    section h2 {
+      font-size: clamp(2.5rem, 5vw, 3.5rem);
+      margin-bottom: 60px;
+      position: relative;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+    }
+
+    section h2::after {
+      content: '';
+      position: absolute;
+      bottom: -15px;
+      left: 0;
+      width: 50px;
+      height: 3px;
+
+      background-color: var(--dark-green);
+      transition: background-color 0.4s ease;
+    }
+
+    body:not(.light-mode) section h2::after {
+      background-color: var(--off-white);
+    }
+
+    .about-container {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 80px;
+      align-items: start;
+    }
+
+    @media (max-width: 900px) {
+      .about-container {
+        grid-template-columns: 1fr;
+        gap: 50px;
+      }
+      .about-photo {
+        grid-row: 1;
+        margin-bottom: 30px;
+      }
+    }
+
+    /* --- About Section Specific --- */
+    .about-toggle-buttons {
+        display: flex;
+        gap: 15px;
+        margin-bottom: 30px;
+    }
+    .about-toggle-btn {
+        padding: 10px 20px;
+        background: none;
+        border: 1px solid var(--dark-green);
+        color: var(--dark-green);
+        font-size: 14px;
+        border-radius: 30px;
+        cursor: pointer;
+        transition: var(--transition), transform 0.3s ease, color 0.4s ease, background-color 0.4s ease, border-color 0.4s ease;
+        font-weight: 500;
+    }
+    body:not(.light-mode) .about-toggle-btn {
+        border: 1px solid var(--off-white);
+        color: var(--off-white);
+    }
+
+    .about-toggle-btn.active,
+    .about-toggle-btn:hover {
+        background-color: var(--dark-green);
+        color: var(--off-white);
+        border-color: var(--dark-green);
+    }
+    body:not(.light-mode) .about-toggle-btn.active,
+    body:not(.light-mode) .about-toggle-btn:hover {
+        background-color: var(--off-white);
+        color: var(--dark-green);
+        border-color: var(--off-white);
+    }
+    .about-toggle-btn.hover-tilt:hover { transform: translateY(-3px); }
+
+    .about-content {
+      font-size: 1.1rem;
+      line-height: 1.7;
+      position: relative; /* Needed for potential future fade transitions */
+      min-height: 150px; /* Adjust as needed to prevent layout jumps */
+    }
+
+    .about-description-content {
+       transition: opacity 0.3s ease;
+       opacity: 1;
+    }
+
+    .about-description-content.hidden {
+        opacity: 0;
+        position: absolute; /* Take out of flow when hidden */
+        top: 0;
+        left: 0;
+        pointer-events: none; /* Prevent interaction when hidden */
+    }
+
+    .about-description-content p {
+        margin-bottom: 1.5em;
+    }
+    .about-description-content p:last-child {
+        margin-bottom: 0;
+    }
+    /* --- End About Section Specific --- */
+
+    .about-photo {
+      position: relative;
+      height: 450px;
+      overflow: hidden;
+      border-radius: 8px;
+    }
+
+    .about-photo img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1), filter 0.4s ease;
+      filter: saturate(0.8);
+    }
+
+    .about-photo:hover img {
+      transform: scale(1.08);
+      filter: saturate(1);
+    }
+
+    .marquee {
+      overflow: hidden;
+      position: relative;
+      margin-top: 80px;
+      width: 100%;
+      padding-top: 10px;
+      padding-bottom: 10px;
+      -webkit-mask-image: linear-gradient(to right, transparent 0%, black 10%, black 90%, transparent 100%);
+      mask-image: linear-gradient(to right, transparent 0%, black 10%, black 90%, transparent 100%);
+    }
+
+    .marquee-inner-wrap {
+        display: flex;
+        width: max-content;
+        animation: marquee 30s linear infinite;
+    }
+
+    .marquee:hover .marquee-inner-wrap {
+      animation-play-state: paused;
+    }
+
+    @keyframes marquee {
+      0% { transform: translateX(0%); }
+      100% { transform: translateX(-50%); }
+    }
+
+    .detail-card {
+      display: inline-block;
+      vertical-align: top;
+      padding: 25px 30px;
+
+      background-color: rgba(58, 90, 74, 0.1);
+      border-radius: 6px;
+      transition: var(--transition), background-color 0.3s ease;
+      margin-right: 25px;
+      min-width: 200px;
+      text-align: left;
+    }
+
+    body:not(.light-mode) .detail-card {
+      background-color: var(--medium-green);
+    }
+     .detail-card.hover-tilt:hover {
+        background-color: rgba(58, 90, 74, 0.18);
+     }
+     body:not(.light-mode) .detail-card.hover-tilt:hover {
+         background-color: var(--light-green);
+     }
+
+    .detail-card h3 {
+      font-size: 13px;
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      margin-bottom: 12px;
+      opacity: 0.7;
+      font-weight: 500;
+    }
+
+    .detail-card p {
+      font-size: 16px;
+      font-weight: 500;
+    }
+
+    #social .social-container {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+      gap: 30px;
+    }
+
+    #social .social-link {
+      text-decoration: none;
+      color: inherit;
+      display: block;
+    }
+
+    #social .social-card {
+
+      background-color: rgba(58, 90, 74, 0.1);
+      border-radius: 6px;
+      padding: 25px;
+      transition: var(--transition), background-color 0.3s ease;
+      cursor: pointer;
+      min-height: 100px;
+      display: flex;
+      align-items: center;
+    }
+
+    body:not(.light-mode) #social .social-card {
+      background-color: var(--medium-green);
+    }
+     #social .social-card.hover-tilt:hover {
+        background-color: rgba(58, 90, 74, 0.18);
+     }
+      body:not(.light-mode) #social .social-card.hover-tilt:hover {
+        background-color: var(--light-green);
+      }
+
+    #social .social-icon {
+      width: 35px;
+      height: 35px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 22px;
+      margin-right: 15px;
+      flex-shrink: 0;
+
+      color: var(--dark-green);
+      opacity: 0.8;
+      transition: color 0.4s ease;
+    }
+     #social .social-icon svg {
+         fill: currentColor;
+         stroke: none;
+     }
+
+    body:not(.light-mode) #social .social-icon {
+        color: var(--off-white);
+    }
+
+    #social .social-name {
+      font-size: 17px;
+      font-weight: 600;
+    }
+
+    #code .section-intro {
+        font-size: 1.1rem;
+        line-height: 1.7;
+        max-width: 800px;
+        margin-bottom: 60px;
+
+        color: rgba(26, 58, 42, 0.9);
+        transition: color 0.4s ease;
+    }
+
+    body:not(.light-mode) #code .section-intro {
+        color: rgba(245, 245, 240, 0.9);
+    }
+    #code .section-intro p { margin-bottom: 1em; }
+    #code .section-intro p:last-child { margin-bottom: 0; }
+
+    #code .skill-container { display: grid; gap: 50px; }
+    #code .skill-category { margin-bottom: 0; }
+    #code .skill-category-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 30px; }
+
+    #code .skill-category h3 { font-size: 22px; margin-bottom: 30px; position: relative; font-weight: 600; }
+    #code .skill-category h3::after { content: ''; position: absolute; bottom: -12px; left: 0; width: 35px; height: 2.5px; background-color: var(--dark-green); transition: background-color 0.4s ease; }
+    body:not(.light-mode) #code .skill-category h3::after { background-color: var(--off-white); }
+
+    #code .skill-bar { height: 45px; position: relative; background-color: rgba(58, 90, 74, 0.1); border-radius: 4px; overflow: hidden; transition: var(--transition), transform 0.3s ease, background-color 0.4s ease; cursor: default; }
+    #code .skill-bar:hover { transform: scale(1.02); }
+    body:not(.light-mode) #code .skill-bar { background-color: var(--medium-green); }
+
+    #code .skill-fill { height: 100%; width: 0; background-color: rgba(58, 90, 74, 0.3); position: absolute; top: 0; left: 0; transition: width 1.8s cubic-bezier(0.16, 1, 0.3, 1), filter 0.3s ease, background-color 0.4s ease; will-change: width; filter: brightness(1); }
+    #code .skill-bar:hover .skill-fill { filter: brightness(1.05); }
+    body:not(.light-mode) #code .skill-fill { background-color: var(--light-green); }
+    body:not(.light-mode) #code .skill-bar:hover .skill-fill { filter: brightness(1.15); }
+
+    #code .skill-details { position: absolute; left: 15px; right: 15px; top: 50%; transform: translateY(-50%); z-index: 1; display: flex; justify-content: space-between; align-items: center; color: var(--dark-green); transition: color 0.4s ease; pointer-events: none; }
+    body:not(.light-mode) #code .skill-details { color: var(--off-white); }
+
+    #code .skill-name { display: flex; align-items: center; font-size: 15px; font-weight: 500; }
+    #code .skill-name svg { margin-right: 10px; opacity: 0.8; transition: stroke 0.4s ease; }
+    #code .skill-percentage { font-size: 14px; font-weight: 500; opacity: 0.9; }
+
+    #projects .projects-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 50px; flex-wrap: wrap; gap: 30px; }
+    #projects .filter-container { display: flex; gap: 15px; flex-wrap: wrap; }
+
+    #projects .filter-btn { padding: 10px 20px; background: none; border: 1px solid var(--dark-green); color: var(--dark-green); font-size: 14px; border-radius: 30px; cursor: pointer; transition: var(--transition), transform 0.3s ease, color 0.4s ease, background-color 0.4s ease, border-color 0.4s ease; font-weight: 500; }
+    body:not(.light-mode) #projects .filter-btn { border: 1px solid var(--off-white); color: var(--off-white); }
+
+    #projects .filter-btn.active,
+    #projects .filter-btn:hover { background-color: var(--dark-green); color: var(--off-white); border-color: var(--dark-green); }
+    body:not(.light-mode) #projects .filter-btn.active,
+    body:not(.light-mode) #projects .filter-btn:hover { background-color: var(--off-white); color: var(--dark-green); border-color: var(--off-white); }
+    #projects .filter-btn.hover-tilt:hover { transform: translateY(-3px); }
+
+    #projects .search-container { position: relative; width: 100%; max-width: 320px; }
+    #projects .search-input { width: 100%; padding: 12px 25px; border: 1px solid rgba(58, 90, 74, 0.2); background-color: rgba(58, 90, 74, 0.1); color: var(--dark-green); border-radius: 30px; font-size: 14px; transition: var(--transition), background-color 0.4s ease, color 0.4s ease, border-color 0.4s ease, box-shadow 0.4s ease; }
+    #projects .search-input::placeholder { color: var(--dark-green); opacity: 0.6; transition: color 0.4s ease; }
+    body:not(.light-mode) #projects .search-input { background-color: var(--medium-green); color: var(--off-white); border: 1px solid transparent; }
+    body:not(.light-mode) #projects .search-input::placeholder { color: var(--off-white); opacity: 0.6; }
+
+    #projects .search-input:focus { outline: none; background-color: rgba(58, 90, 74, 0.15); border-color: var(--dark-green); box-shadow: 0 0 0 2px rgba(26, 58, 42, 0.3); }
+    body:not(.light-mode) #projects .search-input:focus { background-color: var(--light-green); border-color: var(--off-white); box-shadow: 0 0 0 2px rgba(245, 245, 240, 0.3); }
+
+    #projects .projects-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 40px; perspective: 1500px; }
+    #projects .project-card { height: 350px; position: relative; transition: transform 0.9s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.4s ease; transform-style: preserve-3d; cursor: pointer; will-change: transform; }
+    #projects .project-card.flipped { transform: rotateY(180deg); }
+    #projects .project-card.hover-tilt:hover { box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15); }
+
+    #projects .project-front,
+    #projects .project-back { position: absolute; width: 100%; height: 100%; backface-visibility: hidden; border-radius: 8px; overflow: hidden; background-color: rgba(58, 90, 74, 0.08); transition: background-color 0.4s ease, border-color 0.4s ease; border: 1px solid rgba(58, 90, 74, 0.15); }
+    body:not(.light-mode) #projects .project-front,
+    body:not(.light-mode) #projects .project-back { background-color: var(--medium-green); border: 1px solid transparent; }
+
+    #projects .project-front { display: flex; flex-direction: column; }
+    #projects .project-thumbnail { height: 200px; overflow: hidden; }
+    #projects .project-thumbnail img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1); }
+    #projects .project-card:hover .project-thumbnail img { transform: scale(1.08); }
+    #projects .project-info { padding: 25px; display: flex; flex-direction: column; flex-grow: 1; justify-content: center; }
+    #projects .project-title { font-size: 1.15rem; margin-bottom: 12px; font-weight: 600; }
+
+    #projects .project-category { display: inline-block; font-size: 11px; font-weight: 500; text-transform: uppercase; letter-spacing: 1px; padding: 5px 10px; background-color: rgba(58, 90, 74, 0.3); border-radius: 20px; margin-right: 8px; margin-bottom: 8px; color: var(--dark-green); align-self: flex-start; transition: background-color 0.4s ease, color 0.4s ease; }
+    body:not(.light-mode) #projects .project-category { background-color: var(--light-green); color: var(--off-white); }
+
+    #projects .project-back { transform: rotateY(180deg); padding: 30px; display: flex; flex-direction: column; justify-content: space-between; }
+    #projects .project-back .project-title { margin-bottom: 15px; }
+    #projects .project-description { font-size: 14px; line-height: 1.7; margin-bottom: 25px; flex-grow: 1; opacity: 0.9; }
+
+    #projects .project-link { align-self: flex-start; padding: 10px 20px; background-color: var(--dark-green); color: var(--off-white); text-decoration: none; border-radius: 6px; font-size: 14px; font-weight: 500; transition: var(--transition), transform 0.3s ease, background-color 0.4s ease, color 0.4s ease; }
+    body:not(.light-mode) #projects .project-link { background-color: var(--light-green); color: var(--off-white); }
+    #projects .project-link:hover { background-color: var(--medium-green); transform: translateY(-3px); box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1); }
+    body:not(.light-mode) #projects .project-link:hover { background-color: var(--dark-green); }
+
+    .theme-toggle {
+      position: fixed;
+      top: 30px;
+      right: 30px;
+      width: 45px;
+      height: 45px;
+      border-radius: 50%;
+
+      background-color: rgba(245, 245, 240, 0.7);
+      border: 1px solid rgba(26, 58, 42, 0.15);
+      backdrop-filter: blur(8px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      z-index: 1001;
+      transition: var(--transition), transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275), background-color 0.4s ease, border-color 0.4s ease;
+    }
+    .theme-toggle svg {
+        transition: stroke 0.4s ease;
+        stroke: var(--dark-green);
+    }
+
+    body:not(.light-mode) .theme-toggle {
+      background-color: var(--medium-green);
+      border: 1px solid rgba(245, 245, 240, 0.1);
+    }
+    body:not(.light-mode) .theme-toggle svg {
+        stroke: var(--off-white);
+    }
+
+    .theme-toggle.hover-tilt:hover {
+      transform: rotate(45deg) scale(1.1);
+    }
+
+    @media (max-width: 768px) {
+        body { font-size: 15px; }
+        section { padding: 80px 0; }
+        section h2 { margin-bottom: 40px; }
+
+        .navigation { bottom: 20px; padding: 8px 10px; gap: 5px; }
+        .nav-item { width: 38px; height: 38px; }
+        .nav-item:hover { width: 38px; background-color: transparent; }
+        body:not(.light-mode) .nav-item:hover { background-color: transparent; }
+        .nav-item .label { display: none; }
+        .nav-item .icon { left: 50%; transform: translateX(-50%); }
+
+        .theme-toggle { top: 20px; right: 20px; width: 40px; height: 40px; }
+        #projects .projects-header { flex-direction: column; align-items: stretch; }
+        #projects .search-container { max-width: none; order: -1; }
+        #projects .filter-container { justify-content: center; }
+        .marquee { margin-top: 60px; }
+        .detail-card { padding: 20px; margin-right: 20px; min-width: 180px; }
+        #code .skill-container { gap: 40px; }
+        #code .skill-category-grid { grid-template-columns: 1fr; gap: 20px; }
+        #social .social-container { grid-template-columns: 1fr; }
+        #projects .projects-grid { grid-template-columns: 1fr; }
+        .about-toggle-buttons { justify-content: center; }
+    }
+
+  </style>
+</head>
+<body class="light-mode"> <!-- Default: light-mode -->
+
+  <!-- Loader -->
+  <div class="loader" id="loader">
+    <div class="loader-circle"></div>
+  </div>
+
+  <!-- Theme Toggle -->
+  <div class="theme-toggle hover-tilt" id="theme-toggle">
+    <svg id="theme-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <!-- Initial icon (moon) set by JS -->
+    </svg>
+  </div>
+
+  <!-- Navigation -->
+  <div class="navigation" id="navigation">
+    <div class="nav-item hover-tilt" data-section="home">
+      <div class="icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg></div>
+      <div class="label">Home</div>
+    </div>
+    <div class="nav-item hover-tilt" data-section="social">
+      <div class="icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"></circle><circle cx="6" cy="12" r="3"></circle><circle cx="18" cy="19" r="3"></circle><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line></svg></div>
+      <div class="label">Connect</div>
+    </div>
+    <div class="nav-item hover-tilt" data-section="about">
+      <div class="icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg></div>
+      <div class="label">About</div>
+    </div>
+    <div class="nav-item hover-tilt" data-section="code">
+      <div class="icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 18 22 12 16 6"></polyline><polyline points="8 6 2 12 8 18"></polyline></svg></div>
+      <div class="label">Code</div>
+    </div>
+     <div class="nav-item hover-tilt" data-section="projects">
+      <div class="icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><line x1="3" y1="9" x2="21" y2="9"></line><line x1="9" y1="21" x2="9" y2="9"></line></svg></div>
+      <div class="label">Projects</div>
+    </div>
+  </div>
+
+  <!-- Landing Page -->
+  <section class="landing active" id="home">
+      <div class="container">
+        <h1>Brandon Baek</h1>
+      </div>
+  </section>
+
+  <!-- Social Media Section (Connect) -->
+  <section id="social">
+    <div class="container">
+      <h2>Almost all my links.</h2>
+      <div class="social-container">
+        <!-- TikTok -->
+        <a href="https://tiktok.com/@brandon_baek" class="social-link" target="_blank" rel="noopener noreferrer">
+          <div class="social-card hover-tilt">
+            <div class="social-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12.525.02c1.31-.02 2.61-.01 3.91-.02.08 1.53.63 3.09 1.75 4.17 1.12 1.11 2.7 1.62 4.24 1.79v4.03c-1.44-.05-2.89-.35-4.2-.97-.57-.26-1.1-.59-1.62-.93-.01 2.92.01 5.84-.02 8.75-.08 1.4-.54 2.79-1.35 3.94-1.31 1.92-3.58 3.17-5.91 3.21-1.43.08-2.86-.31-4.08-1.03-2.02-1.19-3.44-3.37-3.65-5.71-.02-.5-.03-1-.01-1.49.18-1.9 1.12-3.72 2.58-4.96 1.66-1.44 3.98-2.13 6.15-1.72.02 1.48-.04 2.96-.04 4.44-.99-.32-2.15-.23-3.02.37-.63.41-1.11 1.04-1.36 1.75-.21.51-.15 1.07-.14 1.61.24 1.64 1.82 3.02 3.5 2.87 1.12-.01 2.19-.66 2.77-1.61.19-.33.4-.67.41-1.06.1-1.79.06-3.57.07-5.36.01-4.03-.01-8.05.02-12.07z"></path></svg></div>
+            <div class="social-name">TikTok</div>
+          </div>
+        </a>
+
+        <!-- Instagram -->
+        <a href="https://instagram.com/brandonbaek2010" class="social-link" target="_blank" rel="noopener noreferrer">
+          <div class="social-card hover-tilt">
+            <div class="social-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7.0301.084c-1.2768.0602-2.1487.264-2.911.5634-.7888.3075-1.4575.72-2.1228 1.3877-.6652.6677-1.075 1.3368-1.3802 2.127-.2954.7638-.4956 1.6365-.552 2.914-.0564 1.2775-.0689 1.6882-.0626 4.947.0062 3.2586.0206 3.6671.0825 4.9473.061 1.2765.264 2.1482.5635 2.9107.308.7889.72 1.4573 1.388 2.1228.6679.6655 1.3365 1.0743 2.1285 1.38.7632.295 1.6361.4961 2.9134.552 1.2773.056 1.6884.069 4.9462.0627 3.2578-.0062 3.668-.0207 4.9478-.0814 1.28-.0607 2.147-.2652 2.9098-.5633.7889-.3086 1.4578-.72 2.1228-1.3881.665-.6682 1.0745-1.3378 1.3795-2.1284.2957-.7632.4966-1.636.552-2.9124.056-1.2809.0692-1.6898.063-4.948-.0063-3.2583-.021-3.6668-.0817-4.9465-.0607-1.2797-.264-2.1487-.5633-2.9117-.3084-.7889-.72-1.4568-1.3876-2.1228C21.2982 1.33 20.628.9208 19.8378.6165 19.074.321 18.2017.1197 16.9244.0645 15.6471.0093 15.236-.005 11.977.0014 8.718.0076 8.31.0215 7.0301.0839m.1402 21.6932c-1.17-.0509-1.8053-.2453-2.2287-.408-.5606-.216-.96-.4771-1.3819-.895-.422-.4178-.6811-.8186-.9-1.378-.1644-.4234-.3624-1.058-.4171-2.228-.0595-1.2645-.072-1.6442-.079-4.848-.007-3.2037.0053-3.583.0607-4.848.05-1.169.2456-1.805.408-2.2282.216-.5613.4762-.96.895-1.3816.4188-.4217.8184-.6814 1.3783-.9003.423-.1651 1.0575-.3614 2.227-.4171 1.2655-.06 1.6447-.072 4.848-.079 3.2033-.007 3.5835.005 4.8495.0608 1.169.0508 1.8053.2445 2.228.408.5608.216.96.4754 1.3816.895.4217.4194.6816.8176.9005 1.3787.1653.4217.3617 1.056.4169 2.2263.0602 1.2655.0739 1.645.0796 4.848.0058 3.203-.0055 3.5834-.061 4.848-.051 1.17-.245 1.8055-.408 2.2294-.216.5604-.4763.96-.8954 1.3814-.419.4215-.8181.6811-1.3783.9-.4224.1649-1.0577.3617-2.2262.4174-1.2656.0595-1.6448.072-4.8493.079-3.2045.007-3.5825-.006-4.848-.0608M16.953 5.5864A1.44 1.44 0 1 0 18.39 4.144a1.44 1.44 0 0 0-1.437 1.4424M5.8385 12.012c.0067 3.4032 2.7706 6.1557 6.173 6.1493 3.4026-.0065 6.157-2.7701 6.1506-6.1733-.0065-3.4032-2.771-6.1565-6.174-6.1498-3.403.0067-6.156 2.771-6.1496 6.1738M8 12.0077a4 4 0 1 1 4.008 3.9921A3.9996 3.9996 0 0 1 8 12.0077"></path></svg></div>
+            <div class="social-name">Instagram</div>
+          </div>
+        </a>
+
+        <!-- YouTube -->
+        <a href="https://youtube.com/@brandon-baek?si=tdRU7TinffDxu4rt" class="social-link" target="_blank" rel="noopener noreferrer">
+          <div class="social-card hover-tilt">
+            <div class="social-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"></path></svg></div>
+            <div class="social-name">YouTube</div>
+          </div>
+        </a>
+
+        <!-- Snapchat -->
+        <a href="https://snapchat.com/t/E95gDv16" class="social-link" target="_blank" rel="noopener noreferrer">
+          <div class="social-card hover-tilt">
+            <div class="social-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12.206.793c.99 0 4.347.276 5.93 3.821.529 1.193.403 3.219.299 4.847l-.003.06c-.012.18-.022.345-.03.51.075.045.203.09.401.09.3-.016.659-.12 1.033-.301.165-.088.344-.104.464-.104.182 0 .359.029.509.09.45.149.734.479.734.838.015.449-.39.839-1.213 1.168-.089.029-.209.075-.344.119-.45.135-1.139.36-1.333.81-.09.224-.061.524.12.868l.015.015c.06.136 1.526 3.475 4.791 4.014.255.044.435.27.42.509 0 .075-.015.149-.045.225-.24.569-1.273.988-3.146 1.271-.059.091-.12.375-.164.57-.029.179-.074.36-.134.553-.076.271-.27.405-.555.405h-.03c-.135 0-.313-.031-.538-.074-.36-.075-.765-.135-1.273-.135-.3 0-.599.015-.913.074-.6.104-1.123.464-1.723.884-.853.599-1.826 1.288-3.294 1.288-.06 0-.119-.015-.18-.015h-.149c-1.468 0-2.427-.675-3.279-1.288-.599-.42-1.107-.779-1.707-.884-.314-.045-.629-.074-.928-.074-.54 0-.958.089-1.272.149-.211.043-.391.074-.54.074-.374 0-.523-.224-.583-.42-.061-.192-.09-.389-.135-.567-.046-.181-.105-.494-.166-.57-1.918-.222-2.95-.642-3.189-1.226-.031-.063-.052-.15-.055-.225-.015-.243.165-.465.42-.509 3.264-.54 4.73-3.879 4.791-4.02l.016-.029c.18-.345.224-.645.119-.869-.195-.434-.884-.658-1.332-.809-.121-.029-.24-.074-.346-.119-1.107-.435-1.257-.93-1.197-1.273.09-.479.674-.793 1.168-.793.146 0 .27.029.383.074.42.194.789.3 1.104.3.234 0 .384-.06.465-.105l-.046-.569c-.098-1.626-.225-3.651.307-4.837C7.392 1.077 10.739.807 11.727.807l.419-.015h.06z"></path></svg></div>
+            <div class="social-name">Snapchat</div>
+          </div>
+        </a>
+
+        <!-- Email -->
+        <a href="mailto:brandonbaekk@gmail.com" class="social-link">
+          <div class="social-card hover-tilt">
+            <div class="social-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M24 5.457v13.909c0 .904-.732 1.636-1.636 1.636h-3.819V11.73L12 16.64l-6.545-4.91v9.273H1.636A1.636 1.636 0 0 1 0 19.366V5.457c0-2.023 2.309-3.178 3.927-1.964L5.455 4.64 12 9.548l6.545-4.91 1.528-1.145C21.69 2.28 24 3.434 24 5.457z"></path></svg></div>
+            <div class="social-name">Email</div>
+          </div>
+        </a>
+
+        <!-- Github -->
+        <a href="https://github.com/brandon-baek" class="social-link">
+          <div class="social-card hover-tilt">
+            <div class="social-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"></path></svg></div>
+            <div class="social-name">GitHub</div>
+          </div>
+        </a>
+
+        <!-- Spotify -->
+        <a href="https://open.spotify.com/user/31rkgu5heg6nriwml6g7a55yyrgy?si=23d9605bc15041a6" class="social-link">
+          <div class="social-card hover-tilt">
+            <div class="social-icon">
+              <svg role="img" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <title>Spotify</title>
+                <path d="M12 0C5.4 0 0 5.4 0 12s5.4 12 12 12 12-5.4 12-12S18.66 0 12 0zm5.521 17.34c-.24.359-.66.48-1.021.24-2.82-1.74-6.36-2.101-10.561-1.141-.418.122-.779-.179-.899-.539-.12-.421.18-.78.54-.9 4.56-1.021 8.52-.6 11.64 1.32.42.18.479.659.301 1.02zm1.44-3.3c-.301.42-.841.6-1.262.3-3.239-1.98-8.159-2.58-11.939-1.38-.479.12-1.02-.12-1.14-.6-.12-.48.12-1.021.6-1.141C9.6 9.9 15 10.561 18.72 12.84c.361.181.54.78.241 1.2zm.12-3.36C15.24 8.4 8.82 8.16 5.16 9.301c-.6.179-1.2-.181-1.38-.721-.18-.601.18-1.2.72-1.381 4.26-1.26 11.28-1.02 15.721 1.621.539.3.719 1.02.419 1.56-.299.421-1.02.599-1.559.3z"></path>
+              </svg>
+            </div>
+            <div class="social-name">Spotify</div>
+          </div>
+        </a>
+
+        <!-- Threads -->
+        <a href="https://www.threads.net/@brandonbaek2010" class="social-link">
+          <div class="social-card hover-tilt">
+            <div class="social-icon">
+              <svg role="img" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <title>Threads</title>
+                <path d="M12.186 24h-.007c-3.581-.024-6.334-1.205-8.184-3.509C2.35 18.44 1.5 15.586 1.472 12.01v-.017c.03-3.579.879-6.43 2.525-8.482C5.845 1.205 8.6.024 12.18 0h.014c2.746.02 5.043.725 6.826 2.098 1.677 1.29 2.858 3.13 3.509 5.467l-2.04.569c-1.104-3.96-3.898-5.984-8.304-6.015-2.91.022-5.11.936-6.54 2.717C4.307 6.504 3.616 8.914 3.589 12c.027 3.086.718 5.496 2.057 7.164 1.43 1.783 3.631 2.698 6.54 2.717 2.623-.02 4.358-.631 5.8-2.045 1.647-1.613 1.618-3.593 1.09-4.798-.31-.71-.873-1.3-1.634-1.75-.192 1.352-.622 2.446-1.284 3.272-.886 1.102-2.14 1.704-3.73 1.79-1.202.065-2.361-.218-3.259-.801-1.063-.689-1.685-1.74-1.752-2.964-.065-1.19.408-2.285 1.33-3.082.88-.76 2.119-1.207 3.583-1.291a13.853 13.853 0 0 1 3.02.142c-.126-.742-.375-1.332-.75-1.757-.513-.586-1.308-.883-2.359-.89h-.029c-.844 0-1.992.232-2.721 1.32L7.734 7.847c.98-1.454 2.568-2.256 4.478-2.256h.044c3.194.02 5.097 1.975 5.287 5.388.108.046.216.094.321.142 1.49.7 2.58 1.761 3.154 3.07.797 1.82.871 4.79-1.548 7.158-1.85 1.81-4.094 2.628-7.277 2.65Zm1.003-11.69c-.242 0-.487.007-.739.021-1.836.103-2.98.946-2.916 2.143.067 1.256 1.452 1.839 2.784 1.767 1.224-.065 2.818-.543 3.086-3.71a10.5 10.5 0 0 0-2.215-.221z"></path>
+              </svg>
+            </div>
+            <div class="social-name">Threads</div>
+          </div>
+        </a>
+
+        <!-- Facebook -->
+        <a href="https://www.facebook.com/profile.php?id=61551166925900" class="social-link">
+          <div class="social-card hover-tilt">
+            <div class="social-icon">
+              <svg role="img" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <title>Facebook</title>
+                <path d="M9.101 23.691v-7.98H6.627v-3.667h2.474v-1.58c0-4.085 1.848-5.978 5.858-5.978.401 0 .955.042 1.468.103a8.68 8.68 0 0 1 1.141.195v3.325a8.623 8.623 0 0 0-.653-.036 26.805 26.805 0 0 0-.733-.009c-.707 0-1.259.096-1.675.309a1.686 1.686 0 0 0-.679.622c-.258.42-.374.995-.374 1.752v1.297h3.919l-.386 2.103-.287 1.564h-3.246v8.245C19.396 23.238 24 18.179 24 12.044c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.628 3.874 10.35 9.101 11.647Z"></path>
+              </svg>
+            </div>
+            <div class="social-name">Facebook</div>
+          </div>
+        </a>
+
+        <!-- LinkedIn -->
+        <a href="https://www.linkedin.com/in/brandon-baek-6071862a8/" class="social-link">
+          <div class="social-card hover-tilt">
+            <div class="social-icon">
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-brand-linkedin">
+                <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                <path d="M8 11v5"></path>
+                <path d="M8 8v.01"></path>
+                <path d="M12 16v-5"></path>
+                <path d="M16 16v-3a2 2 0 1 0 -4 0"></path>
+                <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"></path>
+              </svg>
+            </div>
+            <div class="social-name">LinkedIn</div>
+          </div>
+        </a>
+
+        <!-- X -->
+        <a href="https://x.com/BBaek70629" class="social-link">
+          <div class="social-card hover-tilt">
+            <div class="social-icon">
+              <svg role="img" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <title>X</title>
+                <path d="M18.901 1.153h3.68l-8.04 9.19L24 22.846h-7.406l-5.8-7.584-6.638 7.584H.474l8.6-9.83L0 1.154h7.594l5.243 6.932ZM17.61 20.644h2.039L6.486 3.24H4.298Z"></path>
+              </svg>
+            </div>
+            <div class="social-name">X</div>
+          </div>
+        </a>
+
+        <!-- Pinterest -->
+        <a href="https://www.pinterest.com/brandon_baek/?invite_code=c8041b4b0eb54e2ea522cff25f12de63&sender=1001488173295004303" class="social-link">
+          <div class="social-card hover-tilt">
+            <div class="social-icon">
+              <svg role="img" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <title>Pinterest</title>
+                <path d="M12.017 0C5.396 0 .029 5.367.029 11.987c0 5.079 3.158 9.417 7.618 11.162-.105-.949-.199-2.403.041-3.439.219-.937 1.406-5.957 1.406-5.957s-.359-.72-.359-1.781c0-1.663.967-2.911 2.168-2.911 1.024 0 1.518.769 1.518 1.688 0 1.029-.653 2.567-.992 3.992-.285 1.193.6 2.165 1.775 2.165 2.128 0 3.768-2.245 3.768-5.487 0-2.861-2.063-4.869-5.008-4.869-3.41 0-5.409 2.562-5.409 5.199 0 1.033.394 2.143.889 2.741.099.12.112.225.085.345-.09.375-.293 1.199-.334 1.363-.053.225-.172.271-.401.165-1.495-.69-2.433-2.878-2.433-4.646 0-3.776 2.748-7.252 7.92-7.252 4.158 0 7.392 2.967 7.392 6.923 0 4.135-2.607 7.462-6.233 7.462-1.214 0-2.354-.629-2.758-1.379l-.749 2.848c-.269 1.045-1.004 2.352-1.498 3.146 1.123.345 2.306.535 3.55.535 6.607 0 11.985-5.365 11.985-11.987C23.97 5.39 18.592.026 11.985.026L12.017 0z"></path>
+              </svg>
+            </div>
+            <div class="social-name">Pinterest</div>
+          </div>
+        </a>
+
+        <!-- Discord -->
+        <a href="https://discord.gg/vtsHGEgf" class="social-link">
+          <div class="social-card hover-tilt">
+            <div class="social-icon">
+              <svg role="img" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <title>Discord</title>
+                <path d="M20.317 4.3698a19.7913 19.7913 0 00-4.8851-1.5152.0741.0741 0 00-.0785.0371c-.211.3753-.4447.8648-.6083 1.2495-1.8447-.2762-3.68-.2762-5.4868 0-.1636-.3933-.4058-.8742-.6177-1.2495a.077.077 0 00-.0785-.037 19.7363 19.7363 0 00-4.8852 1.515.0699.0699 0 00-.0321.0277C.5334 9.0458-.319 13.5799.0992 18.0578a.0824.0824 0 00.0312.0561c2.0528 1.5076 4.0413 2.4228 5.9929 3.0294a.0777.0777 0 00.0842-.0276c.4616-.6304.8731-1.2952 1.226-1.9942a.076.076 0 00-.0416-.1057c-.6528-.2476-1.2743-.5495-1.8722-.8923a.077.077 0 01-.0076-.1277c.1258-.0943.2517-.1923.3718-.2914a.0743.0743 0 01.0776-.0105c3.9278 1.7933 8.18 1.7933 12.0614 0a.0739.0739 0 01.0785.0095c.1202.099.246.1981.3728.2924a.077.077 0 01-.0066.1276 12.2986 12.2986 0 01-1.873.8914.0766.0766 0 00-.0407.1067c.3604.698.7719 1.3628 1.225 1.9932a.076.076 0 00.0842.0286c1.961-.6067 3.9495-1.5219 6.0023-3.0294a.077.077 0 00.0313-.0552c.5004-5.177-.8382-9.6739-3.5485-13.6604a.061.061 0 00-.0312-.0286zM8.02 15.3312c-1.1825 0-2.1569-1.0857-2.1569-2.419 0-1.3332.9555-2.4189 2.157-2.4189 1.2108 0 2.1757 1.0952 2.1568 2.419 0 1.3332-.9555 2.4189-2.1569 2.4189zm7.9748 0c-1.1825 0-2.1569-1.0857-2.1569-2.419 0-1.3332.9554-2.4189 2.1569-2.4189 1.2108 0 2.1757 1.0952 2.1568 2.419 0 1.3332-.946 2.4189-2.1568 2.4189Z"/>
+              </svg>
+            </div>
+            <div class="social-name">Discord</div>
+          </div>
+        </a>
+
+        <!-- Linktree -->
+        <a href="https://linktr.ee/brandonbaek?utm_source=linktree_profile_share<sid=1a6e6081-9d4a-48a1-b93b-5d81aff2e710" class="social-link">
+          <div class="social-card hover-tilt">
+            <div class="social-icon">
+              <svg role="img" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <title>Linktree</title>
+                <path d="m13.73635 5.85251 4.00467-4.11665 2.3248 2.3808-4.20064 4.00466h5.9085v3.30473h-5.9365l4.22865 4.10766-2.3248 2.3338L12.0005 12.099l-5.74052 5.76852-2.3248-2.3248 4.22864-4.10766h-5.9375V8.12132h5.9085L3.93417 4.11666l2.3248-2.3808 4.00468 4.11665V0h3.4727zm-3.4727 10.30614h3.4727V24h-3.4727z"></path>
+              </svg>
+            </div>
+            <div class="social-name">Linktree</div>
+          </div>
+        </a>
+
+        <!-- Cashapp -->
+        <a href="https://cash.app/$brandonbaekk" class="social-link">
+          <div class="social-card hover-tilt">
+            <div class="social-icon">
+              <svg role="img" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <title>Cash App</title>
+                <path d="M23.59 3.475a5.1 5.1 0 00-3.05-3.05c-1.31-.42-2.5-.42-4.92-.42H8.36c-2.4 0-3.61 0-4.9.4a5.1 5.1 0 00-3.05 3.06C0 4.765 0 5.965 0 8.365v7.27c0 2.41 0 3.6.4 4.9a5.1 5.1 0 003.05 3.05c1.3.41 2.5.41 4.9.41h7.28c2.41 0 3.61 0 4.9-.4a5.1 5.1 0 003.06-3.06c.41-1.3.41-2.5.41-4.9v-7.25c0-2.41 0-3.61-.41-4.91zm-6.17 4.63l-.93.93a.5.5 0 01-.67.01 5 5 0 00-3.22-1.18c-.97 0-1.94.32-1.94 1.21 0 .9 1.04 1.2 2.24 1.65 2.1.7 3.84 1.58 3.84 3.64 0 2.24-1.74 3.78-4.58 3.95l-.26 1.2a.49.49 0 01-.48.39H9.63l-.09-.01a.5.5 0 01-.38-.59l.28-1.27a6.54 6.54 0 01-2.88-1.57v-.01a.48.48 0 010-.68l1-.97a.49.49 0 01.67 0c.91.86 2.13 1.34 3.39 1.32 1.3 0 2.17-.55 2.17-1.42 0-.87-.88-1.1-2.54-1.72-1.76-.63-3.43-1.52-3.43-3.6 0-2.42 2.01-3.6 4.39-3.71l.25-1.23a.48.48 0 01.48-.38h1.78l.1.01c.26.06.43.31.37.57l-.27 1.37c.9.3 1.75.77 2.48 1.39l.02.02c.19.2.19.5 0 .68z"></path>
+              </svg>
+            </div>
+            <div class="social-name">Cash App</div>
+          </div>
+        </a>
+
+        <!-- PayPal -->
+        <a href="https://www.paypal.com/qrcodes/p2pqrc/Z47BL4LT55FMN" class="social-link">
+          <div class="social-card hover-tilt">
+            <div class="social-icon">
+              <svg role="img" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <title>PayPal</title>
+                <path d="M7.016 19.198h-4.2a.562.562 0 0 1-.555-.65L5.093.584A.692.692 0 0 1 5.776 0h7.222c3.417 0 5.904 2.488 5.846 5.5-.006.25-.027.5-.066.747A6.794 6.794 0 0 1 12.071 12H8.743a.69.69 0 0 0-.682.583l-.325 2.056-.013.083-.692 4.39-.015.087zM19.79 6.142c-.01.087-.01.175-.023.261a7.76 7.76 0 0 1-7.695 6.598H9.007l-.283 1.795-.013.083-.692 4.39-.134.843-.014.088H6.86l-.497 3.15a.562.562 0 0 0 .555.65h3.612c.34 0 .63-.249.683-.585l.952-6.031a.692.692 0 0 1 .683-.584h2.126a6.793 6.793 0 0 0 6.707-5.752c.306-1.95-.466-3.744-1.89-4.906z"></path>
+              </svg>
+            </div>
+            <div class="social-name">PayPal</div>
+          </div>
+        </a>
+
+        </div>
+    </div>
+  </section>
+
+  <!-- About Me Section -->
+  <section id="about">
+    <div class="container">
+      <h2>Who am I?</h2>
+      <div class="about-container">
+        <div class="about-text">
+            <!-- Toggle Buttons -->
+            <div class="about-toggle-buttons">
+                <button class="about-toggle-btn active hover-tilt" data-view="professional">Professional</button>
+                <button class="about-toggle-btn hover-tilt" data-view="slang">Brainrot</button>
+            </div>
+            <!-- Description Content Area -->
+            <div class="about-content">
+                <!-- Professional Description (Default) -->
+                <div class="about-description-content" id="about-professional">
+                  <p>Hi, I'm Brandon Baek, a 15-year-old Korean-American freshman in California. My second-generation immigrant background and Dual Language Immersion (DLI) experience have shaped my resilience and cultural awareness, making me proficient in both Korean and English.</p>
+                  <p>As an ambivert, I balance technical and creative passions. I'm developing my own Large Language Model (LLM) in AI/ML and create humorous content on TikTok and YouTube. I also enjoy baking, running, and hiking, embracing challenges for personal growth.</p>
+                  <p>I'm deeply committed to community impact. I serve as Vice President of the La Crescenta branch of the Korean American Music Academy (KAMA), a nonprofit organization founded in 1989 with approximately 100 members across four branches. KAMA donates to various causes, reinforcing the importance of giving back. I was also 8th-grade class president at Rosemont (1600 students), and I'm a member of Homemade Delights, supporting mental health awareness. My goal is to use AI/ML for positive global change, potentially through a nonprofit organization, inspired by the community-focused values I've learned.</p>
+                </div>
+                <!-- Slang Description (Hidden by default) -->
+                <div class="about-description-content hidden" id="about-slang">
+                  <p>U- Uhm, hey! M- My name is Brandon Baek and I'm 15... I'm lwk cracked at coding and leadership shi, so you should hire me tbh 🥺</p>
+                  <p>fr tho, i made ts website all by myself, you ac gotta hire me. or just donate too, thats pretty chill (cashapp and paypal are in the links section aboe)</p>
+                  <p>and if you the huzz, stop lying, i aint got game to have huzz in my &quot;website&quot; 🤓</p>
+                </div>
+            </div>
+        </div>
+        <div class="about-photo">
+          <img src="/api/placeholder/600/450?text=Brandon+Baek+Photo" alt="Brandon Baek">
+        </div>
+      </div>
+      <!-- Marquee -->
+      <div class="marquee">
+        <div class="marquee-inner-wrap">
+          <div class="marquee-inner">
+            <div class="detail-card hover-tilt"><h3>Location</h3><p>California, La Crescenta</p></div>
+            <div class="detail-card hover-tilt"><h3>School</h3><p>Crescenta Valley High School</p></div>
+            <div class="detail-card hover-tilt"><h3>Focus</h3><p>AI/ML & Data Science</p></div>
+            <div class="detail-card hover-tilt"><h3>Languages</h3><p>English, Korean</p></div>
+            <div class="detail-card hover-tilt"><h3>Birthday</h3><p>1/10/2010</p></div>
+            <div class="detail-card hover-tilt"><h3>MBTI</h3><p>ENFJ</p></div>
+          </div>
+            <div class="marquee-inner">
+              <div class="detail-card hover-tilt"><h3>Location</h3><p>California, La Crescenta</p></div>
+              <div class="detail-card hover-tilt"><h3>School</h3><p>Crescenta Valley High School</p></div>
+              <div class="detail-card hover-tilt"><h3>Focus</h3><p>AI/ML & Data Science</p></div>
+              <div class="detail-card hover-tilt"><h3>Languages</h3><p>English, Korean</p></div>
+              <div class="detail-card hover-tilt"><h3>Birthday</h3><p>1/10/2010</p></div>
+              <div class="detail-card hover-tilt"><h3>MBTI</h3><p>ENFJ</p></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Code Section -->
+  <section id="code">
+    <div class="container">
+      <h2>Programming Skills</h2>
+      <div class="section-intro">
+           <p>Technically, I focus on developing AI/ML projects. I enjoy the challenge of breaking down complex problems into elegant, efficient code.</p>
+           <p>Whether I’m architecting a predictive analytics tool, refining a neural network, or exploring new front-end frameworks like React or Vue, I aim to push the boundaries of what’s possible while adhering to best practices and maintaining a high standard of quality.</p>
+      </div>
+      <div class="skill-container">
+         <div class="skill-category">
+           <h3>AI & Machine Learning</h3>
+           <div class="skill-category-grid">
+             <div class="skill-bar">
+                <div class="skill-fill" data-width="90"></div>
+                <div class="skill-details"><div class="skill-name"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L2 7l10 5 10-5-10-5z"></path><path d="M2 17l10 5 10-5"></path><path d="M2 12l10 5 10-5"></path></svg><span>PyTorch</span></div><div class="skill-percentage">90%</div></div>
+             </div>
+             <div class="skill-bar">
+               <div class="skill-fill" data-width="85"></div>
+                <div class="skill-details"><div class="skill-name"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect><line x1="8" y1="21" x2="16" y2="21"></line><line x1="12" y1="17" x2="12" y2="21"></line></svg><span>TensorFlow</span></div><div class="skill-percentage">85%</div></div>
+             </div>
+             <div class="skill-bar">
+               <div class="skill-fill" data-width="80"></div>
+               <div class="skill-details"><div class="skill-name"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"></path><path d="M18.7 8l-5.1 5.2-2.8-2.7L7 14.3"></path></svg><span>scikit-learn</span></div><div class="skill-percentage">80%</div></div>
+             </div>
+             <!-- ADD MORE AI/ML SKILL BARS HERE -->
+           </div>
+         </div>
+         <div class="skill-category">
+           <h3>Languages</h3>
+            <div class="skill-category-grid">
+               <div class="skill-bar">
+                  <div class="skill-fill" data-width="95"></div>
+                  <div class="skill-details"><div class="skill-name"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m11.5 11.5 2.53 1.75.63-1.25a8.5 8.5 0 0 0-1.82-8.43 4.05 4.05 0 0 0-5.66 0 8.5 8.5 0 0 0-1.82 8.43l.63 1.25L8.5 11.5"/><path d="m12.5 11.5-2.53 1.75-.63 1.25a8.5 8.5 0 0 0 1.82 8.43 4.05 4.05 0 0 0 5.66 0 8.5 8.5 0 0 0 1.82-8.43l-.63-1.25L15.5 11.5"/><path d="M18 11h3"/><path d="M3 11h3"/><path d="M12 7v-2"/><path d="M12 17v2"/></svg><span>Python</span></div><div class="skill-percentage">95%</div></div>
+               </div>
+               <div class="skill-bar">
+                 <div class="skill-fill" data-width="85"></div>
+                 <div class="skill-details"><div class="skill-name"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg><span>JavaScript / TS</span></div><div class="skill-percentage">85%</div></div>
+               </div>
+               <div class="skill-bar">
+                 <div class="skill-fill" data-width="70"></div>
+                 <div class="skill-details"><div class="skill-name"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 9.5 14 12l-4 2.5"/><path d="M4 6V4a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v16a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2v-2"/><path d="M14 6V4a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2v-2"/></svg><span>C/C++</span></div><div class="skill-percentage">70%</div></div>
+               </div>
+               <!-- ADD MORE LANGUAGE SKILL BARS HERE -->
+            </div>
+         </div>
+         <div class="skill-category">
+           <h3>Frameworks & Tools</h3>
+            <div class="skill-category-grid">
+               <div class="skill-bar">
+                 <div class="skill-fill" data-width="80"></div>
+                 <div class="skill-details"><div class="skill-name"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><ellipse cx="12" cy="12" rx="4" ry="10" transform="rotate(90 12 12)"></ellipse><ellipse cx="12" cy="12" rx="10" ry="4"></ellipse><circle cx="12" cy="12" r="1"></circle></svg><span>React / Vue</span></div><div class="skill-percentage">80%</div></div>
+               </div>
+               <div class="skill-bar">
+                 <div class="skill-fill" data-width="75"></div>
+                 <div class="skill-details"><div class="skill-name"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 10.5c-1.12.53-2.03 1.2-2.76 2-.72.8-1.2 1.7-1.48 2.5"/><path d="M9 17c.64-1.54 1.47-2.9 2.5-4"/><path d="M11.5 13.5c.73.8 1.64 1.47 2.76 2 .72.8 1.2 1.7 1.48 2.5"/><path d="M15 17c-.64-1.54-1.47-2.9-2.5-4"/><path d="M22 12c0 5.52-4.48 10-10 10S2 17.52 2 12 6.48 2 12 2s10 4.48 10 10Z"/></svg><span>Node.js / Express</span></div><div class="skill-percentage">75%</div></div>
+               </div>
+               <div class="skill-bar">
+                 <div class="skill-fill" data-width="90"></div>
+                 <div class="skill-details"><div class="skill-name"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="18" r="3"></circle><circle cx="6" cy="6" r="3"></circle><path d="M13 6h3a2 2 0 0 1 2 2v7"></path><line x1="6" y1="9" x2="6" y2="21"></line></svg><span>Git & GitHub</span></div><div class="skill-percentage">90%</div></div>
+               </div>
+               <!-- ADD MORE FRAMEWORK/TOOL SKILL BARS HERE -->
+            </div>
+         </div>
+          <!-- ADD MORE SKILL CATEGORIES HERE -->
+      </div>
+    </div>
+  </section>
+
+   <!-- Projects Section -->
+  <section id="projects">
+    <div class="container">
+      <h2>My Projects</h2>
+      <div class="projects-header">
+        <div class="filter-container">
+          <button class="filter-btn active hover-tilt" data-filter="all">All</button>
+          <button class="filter-btn hover-tilt" data-filter="ai">AI/ML</button>
+          <button class="filter-btn hover-tilt" data-filter="web">Web</button>
+          <button class="filter-btn hover-tilt" data-filter="research">Research</button>
+          <!-- ADD MORE FILTER BUTTONS HERE -->
+        </div>
+        <div class="search-container">
+          <input type="text" class="search-input" id="project-search" placeholder="Search projects..." />
+        </div>
+      </div>
+      <div class="projects-grid">
+        <div class="project-card hover-tilt" data-category="ai">
+          <div class="project-front">
+             <!-- IMAGE REPLACEMENT: Replace the src value below with the path to your actual project thumbnail. -->
+            <div class="project-thumbnail"><img src="/api/placeholder/400/300?text=AI+Vision+Thumb" alt="Visual Recognition System" /></div>
+            <div class="project-info">
+              <h3 class="project-title">Visual Recognition System</h3>
+              <span class="project-category">AI/ML</span>
+            </div>
+          </div>
+          <div class="project-back">
+            <h3 class="project-title">Visual Recognition System</h3>
+            <p class="project-description">A computer vision system identifying objects in real-time using custom neural networks (TensorFlow/OpenCV). Achieves 94% accuracy.</p>
+            <a href="#" class="project-link">View Details</a>
+          </div>
+        </div>
+        <div class="project-card hover-tilt" data-category="web">
+          <div class="project-front">
+             <!-- IMAGE REPLACEMENT: Replace the src value below -->
+            <div class="project-thumbnail"><img src="/api/placeholder/400/300?text=Dashboard+Thumb" alt="Interactive Data Dashboard" /></div>
+            <div class="project-info">
+              <h3 class="project-title">Interactive Data Dashboard</h3>
+              <span class="project-category">Web</span>
+            </div>
+          </div>
+          <div class="project-back">
+            <h3 class="project-title">Interactive Data Dashboard</h3>
+            <p class="project-description">Responsive web dashboard visualizing complex datasets (D3.js/React). Features real-time updates, customizable charts, and filtering.</p>
+            <a href="#" class="project-link">Live Demo</a>
+          </div>
+        </div>
+        <div class="project-card hover-tilt" data-category="research">
+          <div class="project-front">
+             <!-- IMAGE REPLACEMENT: Replace the src value below -->
+            <div class="project-thumbnail"><img src="/api/placeholder/400/300?text=NLP+Thumb" alt="NLP Research Paper" /></div>
+            <div class="project-info">
+              <h3 class="project-title">Low-Resource NLP</h3>
+              <span class="project-category">Research</span>
+            </div>
+          </div>
+          <div class="project-back">
+            <h3 class="project-title">NLP Research Paper</h3>
+            <p class="project-description">Published research on optimizing transformer models for low-resource languages, reducing data needs by 40% while maintaining performance.</p>
+            <a href="#" class="project-link">Read Paper</a>
+          </div>
+        </div>
+        <div class="project-card hover-tilt" data-category="ai">
+          <div class="project-front">
+            <!-- IMAGE REPLACEMENT: Replace the src value below -->
+            <div class="project-thumbnail"><img src="/api/placeholder/400/300?text=Forecast+Thumb" alt="Predictive Analytics Tool" /></div>
+            <div class="project-info">
+              <h3 class="project-title">Market Trend Forecaster</h3>
+              <span class="project-category">AI/ML</span>
+            </div>
+          </div>
+          <div class="project-back">
+            <h3 class="project-title">Predictive Analytics Tool</h3>
+            <p class="project-description">An ensemble learning system (LSTM, Gradient Boosting) forecasting market trends with 87% accuracy, providing robust predictions.</p>
+            <a href="#" class="project-link">View Code</a>
+          </div>
+        </div>
+        <div class="project-card hover-tilt" data-category="web ai">
+          <div class="project-front">
+             <!-- IMAGE REPLACEMENT: Replace the src value below -->
+            <div class="project-thumbnail"><img src="/api/placeholder/400/300?text=Learn+AI+Thumb" alt="AI Learning Platform" /></div>
+            <div class="project-info">
+              <h3 class="project-title">AI Learning Platform</h3>
+              <span class="project-category">Web</span><span class="project-category">AI/ML</span>
+            </div>
+          </div>
+          <div class="project-back">
+            <h3 class="project-title">AI Learning Platform</h3>
+            <p class="project-description">Interactive web platform for learning AI/ML concepts via hands-on exercises, code execution, visual explanations, and progress tracking.</p>
+            <a href="#" class="project-link">Visit Platform</a>
+          </div>
+        </div>
+        <div class="project-card hover-tilt" data-category="research ai">
+          <div class="project-front">
+             <!-- IMAGE REPLACEMENT: Replace the src value below -->
+            <div class="project-thumbnail"><img src="/api/placeholder/400/300?text=Music+AI+Thumb" alt="Generative Music AI" /></div>
+            <div class="project-info">
+              <h3 class="project-title">Generative Music AI</h3>
+              <span class="project-category">Research</span><span class="project-category">AI/ML</span>
+            </div>
+          </div>
+          <div class="project-back">
+            <h3 class="project-title">Generative Music AI</h3>
+            <p class="project-description">Experimental AI composing original music by learning patterns from various genres using deep learning for unique, coherent compositions.</p>
+            <a href="#" class="project-link">Hear Samples</a>
+          </div>
+        </div>
+        <!-- ADD MORE PROJECT CARDS HERE -->
+      </div>
+    </div>
+  </section>
+
+  <script>
+
+    const $ = selector => document.querySelector(selector);
+    const $$ = selector => document.querySelectorAll(selector);
+
+    let currentTheme = localStorage.getItem('theme') || 'light';
+
+    const sunIcon = `<svg id="theme-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>`;
+    const moonIcon = `<svg id="theme-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>`;
+
+    const applyTheme = (theme) => {
+      document.body.classList.toggle('light-mode', theme === 'light');
+      $('#theme-toggle').innerHTML = theme === 'light' ? moonIcon : sunIcon;
+      localStorage.setItem('theme', theme);
+      currentTheme = theme;
+    };
+
+    document.addEventListener('DOMContentLoaded', () => {
+      const loader = $('#loader');
+      const themeToggle = $('#theme-toggle');
+      const navItems = $$('.nav-item');
+      const sections = $$('section');
+      const filterBtns = $$('#projects .filter-btn'); // Project filters
+      const projects = $$('.project-card');
+      const projectSearchInput = $('#project-search');
+      const landingHeading = $('.landing h1');
+      const aboutToggleBtns = $$('.about-toggle-btn'); // About section buttons
+      const aboutDescriptions = $$('.about-description-content'); // About descriptions
+
+      // --- Initial Setup ---
+      applyTheme(currentTheme);
+
+      // Loader animation
+      setTimeout(() => {
+        gsap.to(loader, { opacity: 0, duration: 0.5, onComplete: () => loader.classList.add('hidden') });
+        gsap.to(landingHeading, { opacity: 1, y: 0, duration: 1, ease: 'power2.out', delay: 0.3 });
+      }, 1000);
+
+      // --- Theme Toggling ---
+      themeToggle.addEventListener('click', () => {
+        applyTheme(currentTheme === 'light' ? 'dark' : 'light');
+      });
+
+      // --- ScrollTrigger & Section Activation ---
+      gsap.registerPlugin(ScrollTrigger);
+
+      const setActiveSection = (sectionId) => {
+           sections.forEach(s => {
+              const isActive = s.id === sectionId;
+              s.classList.toggle('active', isActive);
+           });
+           navItems.forEach(item => {
+              item.classList.toggle('active', item.getAttribute('data-section') === sectionId);
+           });
+      }
+
+      sections.forEach((section) => {
+        ScrollTrigger.create({
+          trigger: section,
+          start: "top 60%",
+          end: "bottom 40%",
+          onEnter: () => setActiveSection(section.id),
+          onEnterBack: () => setActiveSection(section.id),
+          // Optional: Slightly delay removal on leave/leaveBack if jitter occurs
+          // onLeave: () => { if (section.id !== 'home') setTimeout(() => section.classList.remove('active'), 50); },
+          // onLeaveBack: () => { setTimeout(() => section.classList.remove('active'), 50); }
+        });
+
+        // Animate skill bars when 'code' section enters viewport
+        if(section.id === 'code') {
+            const skillFills = section.querySelectorAll('.skill-fill');
+            skillFills.forEach(bar => {
+                const width = bar.getAttribute('data-width');
+                gsap.to(bar, {
+                    width: `${width}%`,
+                    duration: 1.8,
+                    ease: 'cubic-bezier(0.16, 1, 0.3, 1)',
+                    scrollTrigger: {
+                        trigger: bar.closest('.skill-bar'),
+                        start: 'top 85%',
+                        toggleActions: 'play none none none' // Only play once when entering
+                    }
+                });
+            });
+        }
+      });
+
+      // --- Navigation Clicks ---
+      navItems.forEach(item => {
+        item.addEventListener('click', (e) => {
+          e.preventDefault();
+          const sectionId = item.getAttribute('data-section');
+          const targetSection = $(`#${sectionId}`);
+
+          if (targetSection) {
+             let offsetTop = targetSection.offsetTop;
+             if(sectionId !== 'home') offsetTop -= 10; // Adjust offset slightly for non-home sections
+
+             // Ensure only target section is active before scrolling
+             sections.forEach(s => s.classList.toggle('active', s.id === sectionId));
+             navItems.forEach(nav => nav.classList.toggle('active', nav === item));
+
+             window.scrollTo({
+                top: offsetTop,
+                behavior: 'smooth'
+             });
+          }
+        });
+      });
+
+      // --- About Section Toggle ---
+      aboutToggleBtns.forEach(btn => {
+          btn.addEventListener('click', () => {
+              if (btn.classList.contains('active')) return; // Do nothing if already active
+
+              const viewToShow = btn.getAttribute('data-view');
+
+              // Update button states
+              aboutToggleBtns.forEach(b => b.classList.remove('active'));
+              btn.classList.add('active');
+
+              // Update description visibility
+              aboutDescriptions.forEach(desc => {
+                  if (desc.id === `about-${viewToShow}`) {
+                      desc.classList.remove('hidden');
+                  } else {
+                      desc.classList.add('hidden');
+                  }
+              });
+          });
+      });
+
+      // --- Project Card Flipping ---
+      projects.forEach(card => {
+        card.addEventListener('click', (e) => {
+          // Prevent flip if clicking the link inside the back card
+          if (e.target.closest('.project-link')) return;
+          card.classList.toggle('flipped');
+        });
+      });
+
+      // --- Project Filtering & Searching ---
+      let activeFilter = 'all';
+      let searchQuery = '';
+
+      const filterAndSearchProjects = () => {
+          projects.forEach(card => {
+              const categories = (card.getAttribute('data-category') || '').toLowerCase().split(' ');
+              const title = card.querySelector('.project-title').textContent.toLowerCase();
+              const description = card.querySelector('.project-back .project-description')?.textContent.toLowerCase() || '';
+
+              const categoryMatch = activeFilter === 'all' || categories.some(cat => cat === activeFilter);
+              const searchMatch = searchQuery === '' || title.includes(searchQuery) || description.includes(searchQuery);
+
+              const shouldShow = categoryMatch && searchMatch;
+
+              // Use GSAP for smooth transitions
+              if (shouldShow) {
+                  if (card.style.display === 'none') { // If hidden, fade in and scale up
+                      card.style.display = 'grid'; // Use grid or block depending on your layout needs
+                      gsap.to(card, { opacity: 1, scale: 1, duration: 0.4, delay: 0.1 });
+                  } else { // If already visible, ensure it's fully visible
+                      gsap.to(card, { opacity: 1, scale: 1, duration: 0.2 });
+                  }
+              } else {
+                  if (card.style.display !== 'none') { // If visible, fade out and scale down
+                      gsap.to(card, { opacity: 0, scale: 0.95, duration: 0.3, onComplete: () => card.style.display = 'none' });
+                  }
+              }
+          });
+           // Re-run ScrollTrigger refresh after filtering might change layout
+           ScrollTrigger.refresh();
+      };
+
+      // Filter button listeners
+      filterBtns.forEach(btn => {
+        btn.addEventListener('click', () => {
+          if (btn.classList.contains('active')) return;
+          filterBtns.forEach(b => b.classList.remove('active'));
+          btn.classList.add('active');
+          activeFilter = btn.getAttribute('data-filter');
+          filterAndSearchProjects();
+        });
+      });
+
+      // Search input listener
+      projectSearchInput.addEventListener('input', () => {
+        searchQuery = projectSearchInput.value.toLowerCase().trim();
+        filterAndSearchProjects();
+      });
+
+      // --- Initial Active Section Check (after load & potential redirects) ---
+       setTimeout(() => {
+            let currentSectionId = 'home'; // Default to home
+            let minTop = Infinity;
+            const threshold = window.innerHeight * 0.4; // Consider section active if top is within top 40% of viewport
+
+            sections.forEach(section => {
+                const rect = section.getBoundingClientRect();
+                // Check if the section is reasonably visible (top edge is above the threshold point)
+                if (rect.top < threshold && rect.bottom > 0) {
+                    // Find the section whose top is closest to the top of the viewport (or slightly above)
+                    if (rect.top < minTop) {
+                        minTop = rect.top;
+                        currentSectionId = section.id;
+                    }
+                }
+            });
+             setActiveSection(currentSectionId);
+             console.log("Initial active section set to:", currentSectionId); // For debugging
+       }, 250); // Increased delay slightly
+
+    });
+
+  </script>
+</body>
+</html>
