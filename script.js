@@ -649,36 +649,28 @@ const $ = selector => document.querySelector(selector);
       const setupFilterDropdowns = (categoriesData) => {
           if (!categoriesData || !filterControls) return; // Guard clause
 
-          // Use categories from fetched data
-          const technologyMap = categoriesData.technology || {};
-          const contextMap = categoriesData.context || {};
-
-          // Combine and sort technology/area categories
-          const combinedTech = [
-              ...Object.entries(technologyMap)
-                  .filter(([key]) => !['ai', 'datascience', 'web', 'mobile', 'miscellaneous'].includes(key)) // Exclude areas for now
-                  .map(([value, display]) => ({ value, display })),
-              ...Object.entries(technologyMap)
-                  .filter(([key]) => ['ai', 'datascience', 'web', 'mobile', 'miscellaneous'].includes(key)) // Include areas
-                  .map(([value, display]) => ({ value, display }))
-          ];
-          combinedTech.sort((a, b) => a.display.localeCompare(b.display)); // Sort alphabetically by display name
-
-          const contextCategories = Object.entries(contextMap)
-              .map(([value, display]) => ({ value, display }))
-              .sort((a, b) => a.display.localeCompare(b.display));
-
-          const filterGroups = {
-              technology: combinedTech, // Use the combined & sorted list
-              context: contextCategories
-          };
-
           // Clear previous dropdowns (if any)
           $$('.filter-dropdown').forEach(dd => dd.remove());
+          // Reset active filters dynamically based on categoriesData, keeping 'featured' state
+          const currentFeaturedState = activeFilters.featured; // Preserve current featured state
+          activeFilters = { featured: currentFeaturedState }; // Start with featured state
+          Object.keys(categoriesData).forEach(groupName => {
+              activeFilters[groupName] = []; // Initialize each group found in data as an empty array
+          });
 
-          // Create dropdowns
-          Object.entries(filterGroups).forEach(([groupName, categoryList]) => {
+          // Dynamically create dropdowns for each top-level category group in data.json
+          Object.entries(categoriesData).forEach(([groupName, categoriesMap]) => {
+              // Convert category map to sorted array of {value, display}
+              const categoryList = Object.entries(categoriesMap)
+                  .map(([value, display]) => ({ value, display }))
+                  .sort((a, b) => a.display.localeCompare(b.display));
+
               if (categoryList.length === 0) return; // Skip empty groups
+
+              // Ensure the group exists in activeFilters
+              if (!activeFilters[groupName]) {
+                  activeFilters[groupName] = [];
+              }
 
               const dropdownDiv = document.createElement('div');
               dropdownDiv.classList.add('filter-dropdown');
@@ -686,7 +678,7 @@ const $ = selector => document.querySelector(selector);
               const button = document.createElement('button');
               button.classList.add('filter-dropdown-btn', 'btn-base', 'hover-tilt');
               // Capitalize group name for button text
-              const buttonText = groupName === 'technology' ? 'Technology' : groupName.charAt(0).toUpperCase() + groupName.slice(1);
+              const buttonText = groupName.charAt(0).toUpperCase() + groupName.slice(1); // Simple capitalization
               button.innerHTML = `${buttonText} <span class="arrow"></span>`;
 
               const panel = document.createElement('div');
@@ -740,7 +732,13 @@ const $ = selector => document.querySelector(selector);
           function addCheckboxListener(checkbox, dropdownButton, groupName) {
               checkbox.addEventListener('change', (e) => {
                   const filter = e.target.value;
-                  const group = e.target.dataset.group;
+                  const group = e.target.dataset.group; // groupName is already available in the outer scope
+
+                  // Ensure the group array exists before pushing/filtering
+                  if (!activeFilters[group]) {
+                      activeFilters[group] = [];
+                  }
+
                   if (e.target.checked) {
                       if (!activeFilters[group].includes(filter)) {
                           activeFilters[group].push(filter);
@@ -749,8 +747,12 @@ const $ = selector => document.querySelector(selector);
                       activeFilters[group] = activeFilters[group].filter(f => f !== filter);
                   }
                   dropdownButton.classList.toggle('active', activeFilters[group].length > 0);
-                  const anyFilterActive = activeFilters.context.length > 0 || activeFilters.technology.length > 0 || activeFilters.featured;
-                  $('.filter-btn[data-filter="all"]')?.classList.toggle('active', !anyFilterActive);
+
+                  // Check if *any* dropdown filter is active across all dynamic groups
+                  const anyDropdownFilterActive = Object.values(activeFilters)
+                                                    .some(groupArray => Array.isArray(groupArray) && groupArray.length > 0);
+
+                  $('.filter-btn[data-filter="all"]')?.classList.toggle('active', !anyDropdownFilterActive && !activeFilters.featured);
                   filterAndSearchProjects();
               });
           }
@@ -770,7 +772,9 @@ const $ = selector => document.querySelector(selector);
                           gsap.to(p, { opacity: 0, y: -5, duration: 0.15, pointerEvents: 'none' }); // Animate closed
                       });
                       newBtn.classList.add('active');
-                      activeFilters = { context: [], technology: [], featured: false };
+                      // Reset all filter groups dynamically, keep 'featured' state
+                      activeFilters = { featured: false }; // Start fresh, featured handled below
+                      Object.keys(categoriesData).forEach(groupName => { activeFilters[groupName] = []; }); // Add all groups from data as empty arrays
                       filterLogic = 'and'; // Reset logic
                       $('#filter-logic-and').checked = true; // Reset radio button
                       // Reset visual state of logic toggle labels
@@ -779,7 +783,9 @@ const $ = selector => document.querySelector(selector);
                   } else if (filter === 'featured') {
                       newBtn.classList.toggle('active');
                       activeFilters.featured = newBtn.classList.contains('active');
-                      const anyDropdownFilterActive = activeFilters.context.length > 0 || activeFilters.technology.length > 0;
+                      // Check if *any* dropdown filter is active across all dynamic groups
+                      const anyDropdownFilterActive = Object.values(activeFilters)
+                                                        .some(groupArray => Array.isArray(groupArray) && groupArray.length > 0);
                       $('.filter-btn[data-filter="all"]')?.classList.toggle('active', !activeFilters.featured && !anyDropdownFilterActive);
                   }
                   filterAndSearchProjects();
