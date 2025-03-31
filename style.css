@@ -265,17 +265,16 @@
 
     section {
       padding: 120px 0;
-      opacity: 0;
-      transform: translateY(40px);
+      /* Initial opacity and transform removed - rely on ScrollTrigger batch animations for entrance */
       transition: opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1), transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
       will-change: opacity, transform;
-      pointer-events: none;
     }
 
     section.active {
-      opacity: 1;
-      transform: translateY(0);
-      pointer-events: auto;
+      /* Styles for when section is considered active by ScrollTrigger (if needed for other effects) */
+      /* opacity: 1; */ /* No longer needed here if base opacity is 1 */
+      /* transform: translateY(0); */ /* No longer needed here if base transform is none */
+      pointer-events: auto; /* Still useful to ensure interaction */
     }
 
     section h2 {
