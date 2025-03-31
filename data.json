@@ -41,13 +41,13 @@
       { "title": "Focus", "fact": "AI/ML & Data Science" },
       { "title": "Languages", "fact": "English, Korean" },
       { "title": "Birthday", "fact": "1/10/2010" },
-      { "title": "MBTI", "fact": "ENFJ" }
+      { "title": "MBTI", "fact": "ENFJ-T" }
     ]
   },
   "code": {
     "description": [
-      "Programming has profoundly impacted my life. Even as a toddler, while other kids drew artistic masterpieces, I was heavily captivated by drawing simple rectangles and lines connecting everything, attempting to create &ldquo;systems&rdquo; with my imagination. This fascination led me to self-teach coding, beginning with Scratch at the age of nine.",
-      "Coding quickly evolved into a passionate hobby, filling my free time, but I suddenly felt a slight discomfort with its perceived limitations. While I loved problem-solving, the primary career path seemed confined to building websites and apps&mdash;a direction that didn't fully resonate. And since my primary language, Python, I couldn&rsquo;t even do that. This somewhat discouraged me for a time.",
+      "Programming has profoundly impacted my life. Even as a toddler, while other kids drew artistic masterpieces, I was heavily captivated by drawing simple rectangles and lines connecting everything, attempting to create “systems” with my imagination. This fascination led me to self-teach coding, beginning with Scratch at the age of nine.",
+      "Coding quickly evolved into a passionate hobby, filling my free time, but I suddenly felt a slight discomfort with its perceived limitations. While I loved problem-solving, the primary career path seemed confined to building websites and apps—a direction that didn't fully resonate. And since my primary language, Python, I couldn’t even do that. This somewhat discouraged me for a time.",
       "However, my interest was reignited during a math class when the teacher introduced Linear Regression, the idea of predicting the future with math. I was immediately captivated. I implemented it and found it incredibly exciting. This sparked my deep dive into Data Science, AI, and ML, during which I unknowingly developed a word predictor, a rudimentary form of what we now call a language model, the foundation to ChatGPT. The introduction of ChatGPT later illuminated the true potential of these models.",
       "I aspire to become an AI/ML Engineer. My fascination with \"predicting the future,\" and with chatbots and AI in particular, has been a constant since childhood. From those early attempts to create chatbots in Scratch, which later evolved into more sophisticated Python projects involving advanced text similarity, word-type tokenization, and text topic detection, I've consistently worked towards this goal for the past five years. In January of 2025, I successfully developed and trained an LLM (Basically ChatGPT) from scratch. My dream is to democratize AI's support capabilities, ensuring that anyone can benefit from its advanced assistance in fields such as medicine, law, finance, education, and agriculture."
     ],
@@ -94,23 +94,30 @@
   },
   "projects": {
     "categories": {
-      "technology": {
-        "python": "Python", "java": "Java", "swift": "Swift", "html": "HTML", "css": "CSS",
-        "javascript": "JavaScript", "keras": "Keras", "pandas": "Pandas", "numpy": "NumPy",
-        "react-native": "React Native", "pytorch": "PyTorch", "tensorflow": "TensorFlow",
-        "ai": "AI/ML", "datascience": "Data Science", "web": "Web", "mobile": "Mobile",
-        "miscellaneous": "Miscellaneous"
+      "area": {
+        "ai_ml": "AI/ML",
+        "data_science": "Data Science",
+        "web_dev": "Web Development",
+        "general_programming": "General Programming",
+        "misc": "Miscellaneous"
+        // Add "mobile_dev": "Mobile Development" if needed in the future
       },
       "context": {
-        "school": "School", "organization": "Organization", "student-led": "Student-Led", "community": "Community"
+        "school": "School",
+        "organization": "Organization",
+        "student_led": "Student-Led",
+        "community": "Community"
       }
     },
     "items": [
       {
         "id": "bora",
         "title": "Bora",
-        "categories": ["ai", "featured", "python", "keras", "pytorch", "tensorflow", "numpy"],
-        "displayTags": ["AI/ML", "Featured", "Python"],
+        "primary_area": "ai_ml",
+        "context_tags": [],
+        "technologies": ["Python", "Keras", "PyTorch", "TensorFlow", "NumPy"],
+        "is_featured": true,
+        "display_tags": ["AI/ML", "Featured", "Python"],
         "thumbnail": "Images/Project Thumbnails/bora.png",
         "alt": "Bora Small Language Model",
         "description": "Small Language Models (SLMs) developed and trained from scratch using free GPU resources (Kaggle). Includes BoraKits (Jupyter Notebooks for training).",
@@ -120,8 +127,11 @@
       {
         "id": "ai-voice-assistant",
         "title": "AI Voice Assistant",
-        "categories": ["ai", "python"],
-        "displayTags": ["AI/ML", "Python"],
+        "primary_area": "ai_ml",
+        "context_tags": [],
+        "technologies": ["Python", "Google Gemini"],
+        "is_featured": false,
+        "display_tags": ["AI/ML", "Python"],
         "thumbnail": "Images/Project Thumbnails/aivoiceassistant.png",
         "alt": "AI Voice Assistant",
         "description": "An AI Voice Assistant based on Google's Gemini. Specifically designed for macOS devices.",
@@ -131,8 +141,11 @@
       {
         "id": "ap-comp-sci",
         "title": "AP Computer Science",
-        "categories": ["school", "java"],
-        "displayTags": ["School", "Java"],
+        "primary_area": "general_programming",
+        "context_tags": ["school"],
+        "technologies": ["Java"],
+        "is_featured": false,
+        "display_tags": ["School", "Java"],
         "thumbnail": "Images/Project Thumbnails/apcomputerscience.png",
         "alt": "AP Computer Science Files",
         "description": "Repository containing files (Labs, HW, Notes, Exercises) for a High School AP Computer Science class (1st Semester).",
@@ -142,8 +155,11 @@
       {
         "id": "california-housing",
         "title": "California Housing Analysis",
-        "categories": ["datascience", "ai", "python", "pandas", "numpy"],
-        "displayTags": ["Data Science", "AI/ML", "Python"],
+        "primary_area": "data_science",
+        "context_tags": [],
+        "technologies": ["Python", "Pandas", "NumPy", "Multiple Linear Regression"],
+        "is_featured": false,
+        "display_tags": ["Data Science", "AI/ML", "Python"],
         "thumbnail": "Images/Project Thumbnails/californiahousinganalysis.png",
         "alt": "California Housing Analysis",
         "description": "Data exploration and prediction modeling (Multiple Linear Regression) on the California Housing Dataset using Google Colab.",
@@ -153,8 +169,11 @@
       {
         "id": "emailchat",
         "title": "EmailChat",
-        "categories": ["miscellaneous", "python"],
-        "displayTags": ["Miscellaneous", "Python"],
+        "primary_area": "general_programming",
+        "context_tags": [],
+        "technologies": ["Python", "IMAP", "SMTP"],
+        "is_featured": false,
+        "display_tags": ["Miscellaneous", "Python"],
         "thumbnail": "Images/Project Thumbnails/emailchat.png",
         "alt": "EmailChat Program",
         "description": "An email-based \"Instant\" Messaging program utilizing IMAP and SMTP to send/receive emails formatted as a chat UI.",
@@ -164,8 +183,11 @@
       {
         "id": "fluent-discord-bot",
         "title": "Fluent Discord Bot",
-        "categories": ["miscellaneous", "python"],
-        "displayTags": ["Miscellaneous", "Python"],
+        "primary_area": "misc",
+        "context_tags": [],
+        "technologies": ["Python", "Discord API", "Google Translate API"],
+        "is_featured": false,
+        "display_tags": ["Miscellaneous", "Python"],
         "thumbnail": "Images/Project Thumbnails/fluentdiscordbot.png",
         "alt": "Fluent Discord Translation Bot",
         "description": "A Discord translation bot using Google Translate. Features automatic translation in selected channels and user-specific embed colors.",
@@ -175,19 +197,25 @@
       {
         "id": "mnist-knn",
         "title": "MNIST KNN Classifier",
-        "categories": ["ai", "datascience", "python", "numpy"],
-        "displayTags": ["AI/ML", "Data Science", "Python"],
+        "primary_area": "ai_ml",
+        "context_tags": [],
+        "technologies": ["Python", "NumPy", "K-Nearest Neighbors"],
+        "is_featured": false,
+        "display_tags": ["AI/ML", "Data Science", "Python"],
         "thumbnail": "Images/Project Thumbnails/mnistknnclassifier.png",
         "alt": "MNIST KNN Classifier",
-        "description": "Predicts handwritten digits from the MNIST dataset using the K-Nearest Neighbors algorithm (non-ML AI approach) via Google Colab.",
+        "description": "Predicts handwritten digits from the MNIST dataset using the K-Nearest Neighbors algorithm via Google Colab.",
         "link": "https://github.com/brandon-baek/MNIST-Handwritten-Digit-KNN-Project",
         "linkText": "View on GitHub"
       },
       {
         "id": "portfolio-website",
         "title": "Portfolio Website",
-        "categories": ["web", "html", "css", "javascript"],
-        "displayTags": ["Web", "HTML", "CSS", "JavaScript"],
+        "primary_area": "web_dev",
+        "context_tags": [],
+        "technologies": ["HTML", "CSS", "JavaScript", "GSAP"],
+        "is_featured": false,
+        "display_tags": ["Web", "HTML", "CSS", "JavaScript"],
         "thumbnail": "Images/Project Thumbnails/portfoliowebsite.png",
         "alt": "Portfolio Website",
         "description": "The very website you are looking at! Built with HTML, CSS, and JavaScript, featuring animations powered by GSAP.",
@@ -197,8 +225,11 @@
       {
         "id": "random-project-pile",
         "title": "Random Project Pile",
-        "categories": ["miscellaneous", "python"],
-        "displayTags": ["Miscellaneous", "Python"],
+        "primary_area": "misc",
+        "context_tags": [],
+        "technologies": ["Python"],
+        "is_featured": false,
+        "display_tags": ["Miscellaneous", "Python"],
         "thumbnail": "Images/Project Thumbnails/randomprojectpile.png",
         "alt": "Random Project Pile",
         "description": "A collection of various smaller Python projects and scripts created in spare time (e.g., Baek Bank, Bubble Sort, File Organizer).",
@@ -208,8 +239,11 @@
       {
         "id": "numpy-nn",
         "title": "NumPy Neural Network",
-        "categories": ["ai", "python", "numpy"],
-        "displayTags": ["AI/ML", "Python", "NumPy"],
+        "primary_area": "ai_ml",
+        "context_tags": [],
+        "technologies": ["Python", "NumPy"],
+        "is_featured": false,
+        "display_tags": ["AI/ML", "Python", "NumPy"],
         "thumbnail": "Images/Project Thumbnails/numpyneuralnetwork.png",
         "alt": "Neural Network",
         "description": "A simplistic Neural Network developed from scratch using only NumPy.",
@@ -219,8 +253,11 @@
       {
         "id": "slm-rag",
         "title": "SLM RAG Project",
-        "categories": ["ai", "python", "pytorch"],
-        "displayTags": ["AI/ML", "Python", "PyTorch"],
+        "primary_area": "ai_ml",
+        "context_tags": [],
+        "technologies": ["Python", "PyTorch", "Sentence Transformers", "RAG"],
+        "is_featured": false,
+        "display_tags": ["AI/ML", "Python", "PyTorch"],
         "thumbnail": "Images/Project Thumbnails/slmragproject.png",
         "alt": "SLM RAG Project",
         "description": "A simple implementation of Retrieval-Augmented Generation (RAG) enhancing a Small Language Model (SmolLM-360M) with Sentence Transformer embeddings.",
@@ -230,8 +267,11 @@
       {
         "id": "youtube-sentiment",
         "title": "YouTube Sentiment Detection",
-        "categories": ["ai", "datascience", "python", "keras"],
-        "displayTags": ["AI/ML", "Data Science", "Python", "Keras"],
+        "primary_area": "ai_ml",
+        "context_tags": [],
+        "technologies": ["Python", "Keras", "Sentiment Analysis"],
+        "is_featured": false,
+        "display_tags": ["AI/ML", "Data Science", "Python", "Keras"],
         "thumbnail": "Images/Project Thumbnails/youtubecommentsentimentdetection.png",
         "alt": "YouTube Sentiment Detection",
         "description": "A simple Neural Network using Keras, trained on YouTube comments for text sentiment classification. Dataset provided.",
@@ -241,8 +281,11 @@
       {
         "id": "homemade-delights",
         "title": "Homemade Delights",
-        "categories": ["organization", "student-led", "community", "web"],
-        "displayTags": ["Organization", "Student-Led", "Community", "Web"],
+        "primary_area": "web_dev",
+        "context_tags": ["organization", "student_led", "community"],
+        "technologies": ["Canva"],
+        "is_featured": false,
+        "display_tags": ["Organization", "Student-Led", "Community", "Web"],
         "thumbnail": "Images/Project Thumbnails/homemadedelights.png",
         "alt": "Homemade Delights Website",
         "description": "Student-led project supporting mental health awareness through pastry sales. Website designed using Canva.",
