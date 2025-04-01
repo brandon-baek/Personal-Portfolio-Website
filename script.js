@@ -313,36 +313,30 @@ const $ = selector => document.querySelector(selector);
                  }),
              });
           }
-          // --- End GSAP Social Card Animation ---
+           // --- End GSAP Social Card Animation ---
 
-          // --- GSAP Staggered Fade-in Animation for Project Cards ---
-          const projectCards = gsap.utils.toArray('#projects .project-card');
-          if (projectCards.length > 0) {
-             gsap.set(projectCards, { opacity: 0, y: 30 }); // Set initial state
-             ScrollTrigger.batch(projectCards, {
-                 interval: 0.1,
-                 batchMax: 3, // Adjust batch size as needed
-                 start: "top bottom-=80px", // Trigger slightly earlier (e.g., 80px from bottom)
-                 onEnter: batch => gsap.to(batch, {
-                     opacity: 1,
-                     y: 0,
-                     duration: 0.7,
-                     stagger: 0.15,
-                     ease: "power1.out",
-                     overwrite: true
-                 }),
-                 onLeaveBack: batch => gsap.to(batch, { // Animate out when scrolling back up
-                     opacity: 0,
-                     y: 30,
-                     duration: 0.4,
-                     stagger: 0.1,
-                     ease: "power1.in",
-                     overwrite: true
-                 }),
-             });
-          }
-          // --- End GSAP Project Card Animation ---
-      }
+           // --- GSAP Fade-in Animation for All Project Cards Once ---
+           const projectCards = gsap.utils.toArray('#projects .project-card');
+           if (projectCards.length > 0) {
+              gsap.set(projectCards, { opacity: 0, y: 30 }); // Set initial state (hidden, slightly lower)
+              ScrollTrigger.create({
+                  trigger: "#projects-grid-container", // Trigger when the grid container enters view
+                  start: "top bottom-=100px", // Start when top is 100px from bottom of viewport
+                  once: true, // Only run once
+                  onEnter: () => {
+                      gsap.to(projectCards, {
+                          opacity: 1,
+                          y: 0,
+                          duration: 0.6, // Adjust duration as needed
+                          stagger: 0.08, // Adjust stagger amount as needed
+                          ease: "power1.out",
+                          overwrite: true // Prevent conflicts if triggered again somehow
+                      });
+                  }
+              });
+           }
+           // --- End GSAP Project Card Animation ---
+       }
 
 
       // --- Skill Accordion Logic ---
@@ -517,37 +511,38 @@ const $ = selector => document.querySelector(selector);
       }
 
       // --- About Me Content Toggle (Professional/Brainrot) ---
+      // Simplified logic: Use only class toggles, no GSAP for container fade
       aboutToggleBtns.forEach(btn => {
           btn.addEventListener('click', () => {
-              if (btn.classList.contains('active')) return; // Do nothing if already active
+              if (btn.classList.contains('active')) return;
               const viewToShow = btn.getAttribute('data-view');
               const targetDesc = $(`#about-${viewToShow}`);
               const currentActiveDesc = $('.about-description-content:not(.hidden)');
 
-              aboutToggleBtns.forEach(b => b.classList.remove('active')); // Deactivate all buttons
-              btn.classList.add('active'); // Activate clicked button
+              aboutToggleBtns.forEach(b => b.classList.remove('active'));
+              btn.classList.add('active');
 
-              // Animate out the current description
-              if (currentActiveDesc) {
-                  gsap.to(currentActiveDesc, {
-                      opacity: 0, duration: 0.2,
-                      onComplete: () => {
-                          currentActiveDesc.classList.add('hidden'); // Hide after fade out
-                          currentActiveDesc.style.visibility = 'hidden';
-                          // Animate in the new description
-                          if (targetDesc) {
-                              targetDesc.classList.remove('hidden');
-                              targetDesc.style.visibility = 'visible';
-                              gsap.to(targetDesc, { opacity: 1, duration: 0.3, delay: 0.05 });
-                          }
-                          gsap.delayedCall(0.1, refreshScrollTrigger); // Refresh ScrollTrigger layout
-                      }
-                  });
-              } else if (targetDesc) { // If no description was active, just fade in the target
-                  targetDesc.classList.remove('hidden');
-                  targetDesc.style.visibility = 'visible';
-                  gsap.to(targetDesc, { opacity: 1, duration: 0.3, onComplete: () => gsap.delayedCall(0.1, refreshScrollTrigger) });
+              // Reset page to 0 if switching TO professional view on mobile
+              if (viewToShow === 'professional' && window.innerWidth <= 768) {
+                  // console.log("[Toggle] Switching to Professional on mobile, resetting page to 0."); // DEBUG
+                  aboutCurrentPage = 0;
               }
+
+              // Hide current, show target
+              if (currentActiveDesc) {
+                  // console.log("[Toggle] Hiding current:", currentActiveDesc.id); // DEBUG
+                  currentActiveDesc.classList.add('hidden');
+              }
+              if (targetDesc) {
+                  // console.log("[Toggle] Showing target:", targetDesc.id); // DEBUG
+                  targetDesc.classList.remove('hidden');
+                  // If switching TO professional on mobile, ensure pagination updates
+                  if (viewToShow === 'professional' && window.innerWidth <= 768 && isAboutPaginated) {
+                      // console.log("[Toggle] Calling updateAboutPagination for professional view."); // DEBUG
+                      updateAboutPagination(); // Update pagination immediately after showing
+                  }
+              }
+              refreshScrollTrigger(); // Refresh immediately
           });
       });
 
@@ -614,9 +609,7 @@ const $ = selector => document.querySelector(selector);
       // --- End Project Card Flip Logic ---
 
       // --- Project Filtering & Search ---
-      let activeFilters = { // Store active filters by group
-          context: [],
-          technology: [], // Combined Area and Language/Framework
+      let activeFilters = { // Store active filters by group (populated dynamically by setupFilterDropdowns)
           featured: false // Keep featured as a boolean toggle
       };
       let filterLogic = 'and'; // 'and' or 'or'
@@ -624,13 +617,13 @@ const $ = selector => document.querySelector(selector);
 
       const filterAndSearchProjects = () => {
           const query = searchQuery.toLowerCase().trim(); // Lowercase and trim search query
-          // Ensure activeFilters has keys for context and technology before checking length
-          const hasContextFilter = activeFilters.context && activeFilters.context.length > 0;
-          const hasTechnologyFilter = activeFilters.technology && activeFilters.technology.length > 0;
           let visibleProjectCount = 0; // Counter for visible projects
           const currentProjectCards = $$('#projects .project-card'); // Get current cards
 
           // console.log('Filtering Projects:', activeFilters, `Logic: ${filterLogic}`, `Query: "${query}"`);
+
+          // Get active filter groups (excluding 'featured')
+          const activeFilterGroups = Object.keys(activeFilters).filter(group => group !== 'featured' && Array.isArray(activeFilters[group]) && activeFilters[group].length > 0);
 
           currentProjectCards.forEach(card => {
               // Get card data
@@ -645,37 +638,43 @@ const $ = selector => document.querySelector(selector);
               let categoryMatch = true; // Assume match initially
 
               if (filterLogic === 'and') {
-                  // AND Logic: Must match selected filters in *each* active group
-                  if (hasContextFilter && !activeFilters.context.some(filter => cardCategories.includes(filter))) {
+                  // AND Logic (Stricter): Must match ALL selected tags across ALL active groups, AND the featured filter if active.
+                  let allSelectedTags = [];
+                  activeFilterGroups.forEach(group => {
+                      allSelectedTags = allSelectedTags.concat(activeFilters[group]);
+                  });
+
+                  // Check if the card has ALL the selected tags from dropdowns
+                  if (allSelectedTags.length > 0 && !allSelectedTags.every(tag => cardCategories.includes(tag))) {
                       categoryMatch = false;
                   }
-                  // For technology, check if *any* selected tech/area tag is present
-                  if (categoryMatch && hasTechnologyFilter && !activeFilters.technology.some(filter => cardCategories.includes(filter))) {
-                      categoryMatch = false;
-                  }
+
+                  // Check featured filter (only if dropdowns matched or no dropdowns were selected)
                   if (categoryMatch && activeFilters.featured && !cardCategories.includes('featured')) {
                       categoryMatch = false;
                   }
-              } else { // OR Logic
-                  // OR Logic: Must match *any* selected filter OR be featured if that's selected
+
+              } else { // OR Logic (remains the same)
+                  // OR Logic: Must match ANY selected filter from ANY active group OR be featured if that's selected.
                   let matchesAnyFilter = false;
-                  if (hasContextFilter && activeFilters.context.some(filter => cardCategories.includes(filter))) {
-                      matchesAnyFilter = true;
+                  // Check dropdown filters
+                  for (const group of activeFilterGroups) {
+                      if (activeFilters[group].some(filter => cardCategories.includes(filter))) {
+                          matchesAnyFilter = true;
+                          break; // Found a match, no need to check other groups
+                      }
                   }
-                  // Check if *any* selected tech/area tag is present
-                  if (!matchesAnyFilter && hasTechnologyFilter && activeFilters.technology.some(filter => cardCategories.includes(filter))) {
-                      matchesAnyFilter = true;
-                  }
+                  // Check featured filter
                   if (!matchesAnyFilter && activeFilters.featured && cardCategories.includes('featured')) {
                       matchesAnyFilter = true;
                   }
-                  // If any filters are active (dropdowns or featured), the project must match at least one
-                  if ((hasContextFilter || hasTechnologyFilter || activeFilters.featured) && !matchesAnyFilter) {
+
+                  // If any filters are active (dropdowns or featured), the project must match at least one.
+                  // If no filters are active at all, all projects match (categoryMatch remains true).
+                  if ((activeFilterGroups.length > 0 || activeFilters.featured) && !matchesAnyFilter) {
                       categoryMatch = false;
                   }
-                  // If no filters are active at all, all projects match (handled by default categoryMatch = true)
               }
-
 
               // --- Search Matching ---
               let searchMatch = true; // Assume match if query is empty
@@ -691,12 +690,16 @@ const $ = selector => document.querySelector(selector);
               let shouldShow = categoryMatch && searchMatch;
               // console.log(`  Card: "${title}" -> Cat Match: ${categoryMatch}, Search Match: ${searchMatch}, Show: ${shouldShow}`);
 
-              // Use GSAP.set for immediate visibility changes to avoid animation conflicts
+              // Use GSAP.set for immediate visibility changes to allow grid reflow
               if (shouldShow) {
-                  gsap.set(card, { display: 'grid', opacity: 1, pointerEvents: 'auto' });
-                  card.classList.remove('card-filtered-out'); // Keep class for potential styling
+                  // Kill any hiding animations just in case
+                  gsap.killTweensOf(card);
+                  gsap.set(card, { display: 'grid', opacity: 1, scale: 1, y: 0, pointerEvents: 'auto' });
+                  card.classList.remove('card-filtered-out');
                   visibleProjectCount++;
               } else {
+                  // Kill any showing animations just in case
+                  gsap.killTweensOf(card);
                   gsap.set(card, { display: 'none', opacity: 0, pointerEvents: 'none' });
                   card.classList.add('card-filtered-out');
                   // Reset flip state if card is hidden
@@ -1006,22 +1009,28 @@ const $ = selector => document.querySelector(selector);
 
       // --- About Me Mobile Pagination Logic ---
       const updateAboutPagination = () => {
-          if (!isAboutPaginated || !aboutProfessionalPagesContainer || !aboutProfessionalPages || aboutProfessionalPages.length === 0) return; // Only run if mobile pagination is active and pages exist
-
-          const currentActiveAboutPage = aboutProfessionalPagesContainer.querySelector('p.active');
-
-          // Fade out current page
-          if (currentActiveAboutPage && aboutProfessionalPages[aboutCurrentPage] !== currentActiveAboutPage) {
-              currentActiveAboutPage.classList.remove('active');
-              gsap.to(currentActiveAboutPage, { opacity: 0, duration: 0.2 });
+          // console.log(`[updateAboutPagination] Called. isAboutPaginated: ${isAboutPaginated}, Current Page: ${aboutCurrentPage}`); // DEBUG
+          if (!isAboutPaginated || !aboutProfessionalPagesContainer || !aboutProfessionalPages || aboutProfessionalPages.length === 0) {
+              // console.log(`[updateAboutPagination] Aborting - Conditions not met.`); // DEBUG
+              return; // Only run if mobile pagination is active and pages exist
           }
 
-          // Set and fade in new page
+          // Remove active class from all pages first
+          aboutProfessionalPages.forEach((p, index) => {
+              if (p.classList.contains('active') && index !== aboutCurrentPage) {
+                  // console.log(`[updateAboutPagination] Removing active from page ${index}`); // DEBUG
+                  p.classList.remove('active');
+              }
+          });
+
+          // Add active class to the target page
           const newActiveAboutPage = aboutProfessionalPages[aboutCurrentPage];
           if (newActiveAboutPage) {
-              gsap.set(newActiveAboutPage, { opacity: 0 });
+              // console.log(`[updateAboutPagination] Adding active to page ${aboutCurrentPage}`, newActiveAboutPage); // DEBUG
               newActiveAboutPage.classList.add('active');
-              gsap.to(newActiveAboutPage, { opacity: 1, duration: 0.3, delay: 0.1 });
+              // CSS transition should handle the fade-in based on the .active class
+          } else {
+              // console.log(`[updateAboutPagination] Target page ${aboutCurrentPage} not found.`); // DEBUG
           }
 
           // Update indicator text
@@ -1042,11 +1051,14 @@ const $ = selector => document.querySelector(selector);
 
       // Setup function for mobile pagination listeners
       const setupAboutPagination = () => {
-          aboutProfessionalPages = $$('#about-professional-pages p'); // Select newly added paragraphs
+          // console.log("[setupAboutPagination] Called."); // DEBUG
+          aboutProfessionalPages = aboutProfessionalPagesContainer.querySelectorAll('p'); // Select paragraphs directly from container
           aboutTotalPages = aboutProfessionalPages.length;
           aboutCurrentPage = 0; // Reset page
+          // console.log(`[setupAboutPagination] Found ${aboutTotalPages} pages.`); // DEBUG
 
           if (aboutPrevPageBtn && aboutNextPageBtn && aboutProfessionalPages.length > 0) {
+              // console.log("[setupAboutPagination] Setting up listeners and activating pagination."); // DEBUG
               // Clone buttons to remove old listeners
               const newPrevBtn = aboutPrevPageBtn.cloneNode(true);
               aboutPrevPageBtn.parentNode.replaceChild(newPrevBtn, aboutPrevPageBtn);
@@ -1076,6 +1088,7 @@ const $ = selector => document.querySelector(selector);
               isAboutPaginated = true; // Mark as paginated
               updateAboutPagination(); // Initialize the first page view
           } else {
+              // console.log("[setupAboutPagination] Conditions not met (buttons or pages missing). Hiding controls."); // DEBUG
               // Hide controls if no pages or buttons missing
               const controls = $('.about-pagination-controls');
               if (controls) controls.style.display = 'none';
@@ -1085,11 +1098,12 @@ const $ = selector => document.querySelector(selector);
 
       // Teardown function for mobile pagination
       const teardownAboutPagination = () => {
+          // console.log("[teardownAboutPagination] Called."); // DEBUG
           isAboutPaginated = false; // Mark as not paginated
           // Remove active class and reset opacity for paginated paragraphs
           $$('#about-professional-pages p').forEach(p => { // Use selector directly
               p.classList.remove('active');
-              gsap.set(p, { clearProps: "opacity" }); // Reset opacity set by GSAP
+              // No need to reset opacity if using display:none
           });
           // CSS should handle showing/hiding based on media query
           gsap.delayedCall(0.1, refreshScrollTrigger);
@@ -1247,8 +1261,17 @@ const $ = selector => document.querySelector(selector);
         if (Array.isArray(aboutData.professional) && aboutProfessionalPagesContainer) { // Check if array
             aboutProfessionalPagesContainer.innerHTML = aboutData.professional.map(p => `<p>${p}</p>`).join('');
             // Update the pages array reference for pagination logic
-            aboutProfessionalPages = $$('#about-professional-pages p');
-            aboutTotalPages = aboutProfessionalPages.length;
+            // Select paragraphs *directly* from the container after setting innerHTML
+            // Defer selection slightly to ensure DOM update
+            setTimeout(() => {
+                aboutProfessionalPages = aboutProfessionalPagesContainer.querySelectorAll('p');
+                aboutTotalPages = aboutProfessionalPages.length;
+                // console.log(`[populateAboutSection] Populated mobile pages. Found ${aboutTotalPages} paragraphs.`); // DEBUG
+                // If pagination is already set up (e.g., on resize), update it
+                if (isAboutPaginated) {
+                    updateAboutPagination();
+                }
+            }, 0);
         } else if (aboutProfessionalPagesContainer) {
              console.warn("populateAboutSection: aboutData.professional (for mobile) is missing or not an array.");
              aboutProfessionalPagesContainer.innerHTML = '<p>Description unavailable.</p>';
@@ -1470,17 +1493,33 @@ const $ = selector => document.querySelector(selector);
 
     // --- Function to Initialize Components Dependent on Dynamic Content ---
     const initializeDynamicComponents = () => {
+        // Set initial About section visibility based on active button
+        const initialActiveAboutBtn = $('.about-toggle-btn.active');
+        const initialView = initialActiveAboutBtn ? initialActiveAboutBtn.getAttribute('data-view') : 'professional'; // Default to professional
+        aboutDescriptions.forEach(desc => {
+            const descView = desc.id.replace('about-', '');
+            if (descView === initialView) {
+                desc.classList.remove('hidden');
+            } else {
+                desc.classList.add('hidden');
+            }
+        });
+
         setupAboutSwiper();
         setupSkillAccordion();
         setupProjectCardFlip();
         setupDescPagination(); // Setup programming description pagination
 
         // Initial check for About Me mobile pagination
-        if (window.innerWidth <= 768) {
-            setupAboutPagination();
-        } else {
-            teardownAboutPagination(); // Ensure desktop view is correct initially
-        }
+        // Use setTimeout to ensure DOM is updated after innerHTML changes
+        setTimeout(() => {
+            if (window.innerWidth <= 768) {
+                // setupAboutPagination will call updateAboutPagination internally to show page 0 if needed
+                setupAboutPagination();
+            } else {
+                teardownAboutPagination(); // Ensure desktop view is correct initially
+            }
+        }, 0); // Zero delay pushes execution to end of event loop
     }
 
     }); // End of DOMContentLoaded

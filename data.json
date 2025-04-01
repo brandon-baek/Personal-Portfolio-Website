@@ -94,29 +94,26 @@
   },
   "projects": {
     "categories": {
-      "technology": {
-        "python": "Python", "java": "Java", "swift": "Swift", "html": "HTML", "css": "CSS",
-        "javascript": "JavaScript", "keras": "Keras", "pandas": "Pandas", "numpy": "NumPy",
-        "react-native": "React Native", "pytorch": "PyTorch", "tensorflow": "TensorFlow",
-        "ai": "AI/ML", "datascience": "Data Science", "web": "Web", "mobile": "Mobile",
-        "miscellaneous": "Miscellaneous"
+      "type": {
+        "ai-ml": "AI/ML",
+        "data-science": "Data Science",
+        "web": "Web Development",
+        "mobile": "Mobile Development",
+        "community": "Community Initiative",
+        "misc": "Miscellaneous"
       },
-      "context": {
-        "school": "School", "organization": "Organization", "student-led": "Student-Led", "community": "Community"
-      },
-      "stuff": {
-        "random": "Random"
-      },
-      "adsf": {
-        "adsf": "Random"
+      "status": {
+        "featured": "Featured",
+        "active": "Active",
+        "archived": "Archived"
       }
     },
     "items": [
       {
         "id": "bora",
         "title": "Bora",
-        "categories": ["ai", "featured", "python", "keras", "pytorch", "tensorflow", "numpy"],
-        "displayTags": ["AI/ML", "Featured", "Python"],
+        "categories": ["ai-ml", "featured"],
+        "displayTags": ["AI/ML", "Featured"],
         "thumbnail": "Images/Project Thumbnails/bora.png",
         "alt": "Bora Small Language Model",
         "description": "Small Language Models (SLMs) developed and trained from scratch using free GPU resources (Kaggle). Includes BoraKits (Jupyter Notebooks for training).",
@@ -126,8 +123,8 @@
       {
         "id": "ai-voice-assistant",
         "title": "AI Voice Assistant",
-        "categories": ["ai", "python"],
-        "displayTags": ["AI/ML", "Python"],
+        "categories": ["ai-ml"],
+        "displayTags": ["AI/ML"],
         "thumbnail": "Images/Project Thumbnails/aivoiceassistant.png",
         "alt": "AI Voice Assistant",
         "description": "An AI Voice Assistant based on Google's Gemini. Specifically designed for macOS devices.",
@@ -137,8 +134,8 @@
       {
         "id": "ap-comp-sci",
         "title": "AP Computer Science",
-        "categories": ["school", "java"],
-        "displayTags": ["School", "Java"],
+        "categories": ["misc"],
+        "displayTags": ["Miscellaneous"],
         "thumbnail": "Images/Project Thumbnails/apcomputerscience.png",
         "alt": "AP Computer Science Files",
         "description": "Repository containing files (Labs, HW, Notes, Exercises) for a High School AP Computer Science class (1st Semester).",
@@ -148,8 +145,8 @@
       {
         "id": "california-housing",
         "title": "California Housing Analysis",
-        "categories": ["datascience", "ai", "python", "pandas", "numpy"],
-        "displayTags": ["Data Science", "AI/ML", "Python"],
+        "categories": ["data-science", "ai-ml"],
+        "displayTags": ["Data Science", "AI/ML"],
         "thumbnail": "Images/Project Thumbnails/californiahousinganalysis.png",
         "alt": "California Housing Analysis",
         "description": "Data exploration and prediction modeling (Multiple Linear Regression) on the California Housing Dataset using Google Colab.",
@@ -159,8 +156,8 @@
       {
         "id": "emailchat",
         "title": "EmailChat",
-        "categories": ["miscellaneous", "python"],
-        "displayTags": ["Miscellaneous", "Python"],
+        "categories": ["misc"],
+        "displayTags": ["Miscellaneous"],
         "thumbnail": "Images/Project Thumbnails/emailchat.png",
         "alt": "EmailChat Program",
         "description": "An email-based \"Instant\" Messaging program utilizing IMAP and SMTP to send/receive emails formatted as a chat UI.",
@@ -170,8 +167,8 @@
       {
         "id": "fluent-discord-bot",
         "title": "Fluent Discord Bot",
-        "categories": ["miscellaneous", "python"],
-        "displayTags": ["Miscellaneous", "Python"],
+        "categories": ["misc"],
+        "displayTags": ["Miscellaneous"],
         "thumbnail": "Images/Project Thumbnails/fluentdiscordbot.png",
         "alt": "Fluent Discord Translation Bot",
         "description": "A Discord translation bot using Google Translate. Features automatic translation in selected channels and user-specific embed colors.",
@@ -181,8 +178,8 @@
       {
         "id": "mnist-knn",
         "title": "MNIST KNN Classifier",
-        "categories": ["ai", "datascience", "python", "numpy"],
-        "displayTags": ["AI/ML", "Data Science", "Python"],
+        "categories": ["ai-ml", "data-science"],
+        "displayTags": ["AI/ML", "Data Science"],
         "thumbnail": "Images/Project Thumbnails/mnistknnclassifier.png",
         "alt": "MNIST KNN Classifier",
         "description": "Predicts handwritten digits from the MNIST dataset using the K-Nearest Neighbors algorithm (non-ML AI approach) via Google Colab.",
@@ -192,8 +189,8 @@
       {
         "id": "portfolio-website",
         "title": "Portfolio Website",
-        "categories": ["web", "html", "css", "javascript"],
-        "displayTags": ["Web", "HTML", "CSS", "JavaScript"],
+        "categories": ["web"],
+        "displayTags": ["Web Development"],
         "thumbnail": "Images/Project Thumbnails/portfoliowebsite.png",
         "alt": "Portfolio Website",
         "description": "The very website you are looking at! Built with HTML, CSS, and JavaScript, featuring animations powered by GSAP.",
@@ -203,8 +200,8 @@
       {
         "id": "random-project-pile",
         "title": "Random Project Pile",
-        "categories": ["miscellaneous", "python"],
-        "displayTags": ["Miscellaneous", "Python"],
+        "categories": ["misc"],
+        "displayTags": ["Miscellaneous"],
         "thumbnail": "Images/Project Thumbnails/randomprojectpile.png",
         "alt": "Random Project Pile",
         "description": "A collection of various smaller Python projects and scripts created in spare time (e.g., Baek Bank, Bubble Sort, File Organizer).",
@@ -214,8 +211,8 @@
       {
         "id": "numpy-nn",
         "title": "NumPy Neural Network",
-        "categories": ["ai", "python", "numpy"],
-        "displayTags": ["AI/ML", "Python", "NumPy"],
+        "categories": ["ai-ml"],
+        "displayTags": ["AI/ML"],
         "thumbnail": "Images/Project Thumbnails/numpyneuralnetwork.png",
         "alt": "Neural Network",
         "description": "A simplistic Neural Network developed from scratch using only NumPy.",
@@ -225,8 +222,8 @@
       {
         "id": "slm-rag",
         "title": "SLM RAG Project",
-        "categories": ["ai", "python", "pytorch"],
-        "displayTags": ["AI/ML", "Python", "PyTorch"],
+        "categories": ["ai-ml"],
+        "displayTags": ["AI/ML"],
         "thumbnail": "Images/Project Thumbnails/slmragproject.png",
         "alt": "SLM RAG Project",
         "description": "A simple implementation of Retrieval-Augmented Generation (RAG) enhancing a Small Language Model (SmolLM-360M) with Sentence Transformer embeddings.",
@@ -236,8 +233,8 @@
       {
         "id": "youtube-sentiment",
         "title": "YouTube Sentiment Detection",
-        "categories": ["ai", "datascience", "python", "keras"],
-        "displayTags": ["AI/ML", "Data Science", "Python", "Keras"],
+        "categories": ["ai-ml", "data-science"],
+        "displayTags": ["AI/ML", "Data Science"],
         "thumbnail": "Images/Project Thumbnails/youtubecommentsentimentdetection.png",
         "alt": "YouTube Sentiment Detection",
         "description": "A simple Neural Network using Keras, trained on YouTube comments for text sentiment classification. Dataset provided.",
@@ -247,8 +244,8 @@
       {
         "id": "homemade-delights",
         "title": "Homemade Delights",
-        "categories": ["organization", "student-led", "community", "web"],
-        "displayTags": ["Organization", "Student-Led", "Community", "Web"],
+        "categories": ["community", "web"],
+        "displayTags": ["Community", "Web Development"],
         "thumbnail": "Images/Project Thumbnails/homemadedelights.png",
         "alt": "Homemade Delights Website",
         "description": "Student-led project supporting mental health awareness through pastry sales. Website designed using Canva.",

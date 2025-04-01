@@ -424,7 +424,8 @@
     }
 
     .about-description-content {
-       transition: opacity 0.3s ease;
+       display: block; /* Explicitly set display type */
+       transition: opacity 0.3s ease; /* Keep transition */
        opacity: 1;
        width: 100%;
        position: relative;
@@ -433,15 +434,12 @@
        pointer-events: auto;
     }
 
-    .about-description-content.hidden {
-        opacity: 0;
-        position: relative;
-        visibility: hidden;
-        pointer-events: none;
-        height: 0;
-        overflow: hidden;
-        margin-bottom: 0;
-    }
+.about-description-content.hidden {
+    display: none; /* Use display: none to hide */
+    /* Remove opacity/visibility/height/overflow rules */
+    margin-bottom: 0; /* Keep margin reset */
+    /* Remove transition */
+}
 
     .about-description-content p {
         margin-bottom: 1.5em;
@@ -451,6 +449,11 @@
     }
 
     /* About Me Pagination - Mobile Only */
+    #about-professional-pages {
+        position: relative; /* Needed for absolute positioning of children */
+        min-height: 100px; /* Ensure container takes up space */
+        width: 100%;
+    }
     .about-pagination-controls {
         display: none; /* Hidden by default (desktop) */
         margin-top: 20px;
@@ -463,12 +466,19 @@
 
     #about-professional-pages p {
         display: none; /* Hidden by default */
-        opacity: 0;
-        transition: opacity 0.4s ease-in-out;
+        opacity: 0; /* Keep opacity for potential fade (though display:none overrides) */
+        transition: opacity 0.4s ease-in-out; /* Keep transition */
+        margin-bottom: 1.5em; /* Keep original margin */
+    }
+     #about-professional-pages p:last-child {
+        margin-bottom: 0; /* Keep original margin */
     }
      #about-professional-pages p.active {
         display: block; /* Show active page */
-        opacity: 1;
+        opacity: 1; /* Ensure opacity is 1 when active */
+        position: relative; /* Keep relative positioning if needed for layout */
+        pointer-events: auto; /* Allow interaction when visible */
+        /* transition: opacity 0.4s ease-in-out; */ /* Transition handled by base rule */
     }
 
     /* Desktop view: Show original paragraphs, hide mobile pagination */
@@ -477,11 +487,11 @@
     .about-pagination-controls { display: none; }
 
     @media (max-width: 768px) {
-        /* Mobile view: Hide original paragraphs, show mobile pagination */
-        #about-professional > p { display: none !important; } /* Hide original paragraphs */
+        /* Mobile view: Show mobile pagination container and controls */
+        /* #about-professional > p { display: none; } */ /* REMOVED this rule */
         #about-professional-pages { display: block; } /* Show the container */
-        #about-professional-pages p { display: none; } /* Ensure only active is shown via JS */
-        #about-professional-pages p.active { display: block; } /* Ensure active is shown */
+        #about-professional-pages p { display: none; } /* Hide all paragraphs by default */
+        #about-professional-pages p.active { display: block; } /* Show only the active paragraph */
         .about-pagination-controls { display: flex; } /* Show controls */
     }
 
