@@ -122,9 +122,10 @@ const $ = selector => document.querySelector(selector);
         fetch('data.json')
         .then(response => {
           if (!response.ok) {
+            // Throw specific error for network issues vs. bad JSON
             throw new Error(`HTTP error! status: ${response.status}`);
           }
-          return response.json();
+          return response.json(); // This can also throw if JSON is invalid
         })
         .then(data => {
           portfolioData = data;
@@ -143,30 +144,70 @@ const $ = selector => document.querySelector(selector);
         })
         .catch(error => {
           console.error("Error fetching or processing portfolio data:", error);
-          // Optionally display an error message to the user on the page
-          const body = $('body');
-          if (body) {
-              body.innerHTML = `<div style="color: red; padding: 20px; font-family: sans-serif;">Error loading portfolio data. Please check data.json and ensure the server is running if needed. Details: ${error.message}</div>`;
+          // --- Improved Error Handling ---
+          // Display error without replacing the entire body
+          const errorContainer = $('#error-message-container') || document.createElement('div');
+          if (!errorContainer.id) {
+              errorContainer.id = 'error-message-container';
+              errorContainer.style.cssText = 'position: fixed; top: 10px; left: 10px; background-color: rgba(255,0,0,0.8); color: white; padding: 15px; border-radius: 5px; z-index: 1000; font-family: sans-serif;';
+              // Ensure body exists before appending
+              if (document.body) {
+                  document.body.appendChild(errorContainer);
+              } else {
+                  // Fallback if body isn't ready somehow (shouldn't happen in DOMContentLoaded)
+                  console.error("Cannot display error message: document.body not found.");
+                  return;
+              }
           }
+          errorContainer.innerHTML = `<strong>Error loading portfolio data.</strong> Please check data.json and ensure the server is running if needed.<br>Details: ${error.message}`;
+          // Hide loader if it's still visible
+          if (loader && !loader.classList.contains('hidden')) {
+              gsap.to(loader, { opacity: 0, duration: 0.3, onComplete: () => loader.classList.add('hidden') });
+          }
+          // --- End Improved Error Handling ---
         });
       } catch (initError) {
           console.error("Critical error during initial script setup:", initError);
-           const body = $('body');
-           if (body) {
-               body.innerHTML = `<div style="color: red; padding: 20px; font-family: sans-serif;">Critical script error during initialization. Details: ${initError.message}</div>`;
+           // --- Improved Error Handling for Init ---
+           const errorContainer = $('#error-message-container') || document.createElement('div');
+           if (!errorContainer.id) {
+               errorContainer.id = 'error-message-container';
+               errorContainer.style.cssText = 'position: fixed; top: 10px; left: 10px; background-color: rgba(255,0,0,0.8); color: white; padding: 15px; border-radius: 5px; z-index: 1000; font-family: sans-serif;';
+               if (document.body) {
+                   document.body.appendChild(errorContainer);
+               } else {
+                   console.error("Cannot display init error message: document.body not found.");
+                   return;
+               }
            }
+           errorContainer.innerHTML = `<strong>Critical script error during initialization.</strong><br>Details: ${initError.message}`;
+           if (loader && !loader.classList.contains('hidden')) {
+               gsap.to(loader, { opacity: 0, duration: 0.3, onComplete: () => loader.classList.add('hidden') });
+           }
+           // --- End Improved Error Handling ---
       }
 
       // --- Loader Animation ---
       setTimeout(() => {
-        gsap.to(loader, { opacity: 0, duration: 0.5, onComplete: () => loader.classList.add('hidden') });
-        gsap.to(landingHeading, { opacity: 1, y: 0, duration: 1, ease: 'power2.out', delay: 0.3 }); // Animate landing heading
+        // Check if loader exists and isn't already hidden before animating
+        if (loader && !loader.classList.contains('hidden')) {
+            gsap.to(loader, { opacity: 0, duration: 0.5, onComplete: () => loader.classList.add('hidden') });
+        }
+        // Check if landingHeading exists before animating
+        if (landingHeading) {
+            gsap.to(landingHeading, { opacity: 1, y: 0, duration: 1, ease: 'power2.out', delay: 0.3 }); // Animate landing heading
+        }
       }, 500); // Delay slightly after load (Keep this timing)
 
       // --- Theme Toggle ---
-      themeToggle.addEventListener('click', () => {
-        applyTheme(currentTheme === 'light' ? 'dark' : 'light');
-      });
+      if (themeToggle) { // Check if element exists
+          themeToggle.addEventListener('click', () => {
+            applyTheme(currentTheme === 'light' ? 'dark' : 'light');
+          });
+      } else {
+          console.warn("Theme toggle button not found.");
+      }
+
 
       // --- Tilt Effect Initialization ---
       let tiltInstances = [];
@@ -177,9 +218,14 @@ const $ = selector => document.querySelector(selector);
         if (window.innerWidth > 768) { // Only apply tilt on wider screens
           const elementsToTilt = document.querySelectorAll(".js-tilt");
           if (elementsToTilt.length > 0) {
-              VanillaTilt.init(elementsToTilt, tiltOptions);
-              // Store instances if needed for later manipulation (optional)
-              elementsToTilt.forEach(el => { if(el.vanillaTilt) tiltInstances.push(el.vanillaTilt) });
+              // Check if VanillaTilt is loaded
+              if (typeof VanillaTilt !== 'undefined') {
+                  VanillaTilt.init(elementsToTilt, tiltOptions);
+                  // Store instances if needed for later manipulation (optional)
+                  elementsToTilt.forEach(el => { if(el.vanillaTilt) tiltInstances.push(el.vanillaTilt) });
+              } else {
+                  console.warn("VanillaTilt library not loaded. Tilt effect disabled.");
+              }
           }
         }
       }
@@ -198,9 +244,21 @@ const $ = selector => document.querySelector(selector);
            navItems.forEach(item => item.classList.toggle('active', item.getAttribute('data-section') === sectionId)); // Update nav item active state
       }
 
-      const refreshScrollTrigger = () => ScrollTrigger.refresh(true); // Helper to refresh ScrollTrigger
+      const refreshScrollTrigger = () => {
+          // Check if ScrollTrigger is loaded
+          if (typeof ScrollTrigger !== 'undefined') {
+              ScrollTrigger.refresh(true);
+          } else {
+              console.warn("ScrollTrigger library not loaded. Cannot refresh.");
+          }
+      };
 
       const setupScrollTriggers = () => {
+          // Check if ScrollTrigger is loaded
+          if (typeof ScrollTrigger === 'undefined') {
+              console.warn("ScrollTrigger library not loaded. Skipping ScrollTrigger setup.");
+              return;
+          }
           ScrollTrigger.getAll().forEach(st => st.kill()); // Kill existing triggers before creating new ones
           ScrollTrigger.defaults({}); // Default settings for ScrollTrigger
           refreshScrollTrigger(); // Initial refresh
@@ -296,6 +354,11 @@ const $ = selector => document.querySelector(selector);
           accordionItems.forEach(item => {
               const header = item.querySelector('.skill-accordion-header');
               const content = item.querySelector('.skill-accordion-content');
+              // Ensure header and content exist before proceeding
+              if (!header || !content) {
+                  console.warn("Skipping accordion item due to missing header or content:", item);
+                  return;
+              }
               const skillLevels = content.querySelectorAll('.skill-level'); // Skill bars within the content
 
               // Set initial state (closed, bars at 0%)
@@ -313,20 +376,22 @@ const $ = selector => document.querySelector(selector);
                   if (openAccordion && openAccordion !== item) {
                       const openHeader = openAccordion.querySelector('.skill-accordion-header');
                       const openContent = openAccordion.querySelector('.skill-accordion-content');
-                      const openLevels = openContent.querySelectorAll('.skill-level'); // Get bars of the closing item
-
-                      openHeader.classList.remove('active'); // Deactivate header
-                      gsap.to(openContent, { // Animate closed
-                          maxHeight: 0, // Collapse height
-                          opacity: 0, // Fade out
-                          duration: 0.3,
-                          ease: 'power1.inOut',
-                          onComplete: () => {
-                              openAccordion.classList.remove('active'); // Deactivate item
-                              gsap.set(openLevels, { width: '0%' }); // Reset skill bars
-                              ScrollTrigger.refresh(); // Refresh ScrollTrigger layout
-                          }
-                      });
+                      // Ensure elements exist before manipulating
+                      if (openHeader && openContent) {
+                          const openLevels = openContent.querySelectorAll('.skill-level'); // Get bars of the closing item
+                          openHeader.classList.remove('active'); // Deactivate header
+                          gsap.to(openContent, { // Animate closed
+                              maxHeight: 0, // Collapse height
+                              opacity: 0, // Fade out
+                              duration: 0.3,
+                              ease: 'power1.inOut',
+                              onComplete: () => {
+                                  openAccordion.classList.remove('active'); // Deactivate item
+                                  gsap.set(openLevels, { width: '0%' }); // Reset skill bars
+                                  refreshScrollTrigger(); // Refresh ScrollTrigger layout
+                              }
+                          });
+                      }
                   }
 
                   // Toggle the clicked accordion item
@@ -351,7 +416,7 @@ const $ = selector => document.querySelector(selector);
                                       delay: 0.1
                                   });
                               });
-                              ScrollTrigger.refresh(); // Refresh ScrollTrigger layout
+                              refreshScrollTrigger(); // Refresh ScrollTrigger layout
                           }
                       });
                   } else { // If it was open, close it
@@ -365,7 +430,7 @@ const $ = selector => document.querySelector(selector);
                               item.classList.remove('active'); // Deactivate item
                               gsap.set(skillLevels, { width: '0%' }); // Reset skill bars
                               openAccordion = null; // Mark no accordion as open
-                              ScrollTrigger.refresh(); // Refresh ScrollTrigger layout
+                              refreshScrollTrigger(); // Refresh ScrollTrigger layout
                           }
                       });
                   }
@@ -376,7 +441,6 @@ const $ = selector => document.querySelector(selector);
 
 
       // --- Smooth Scrolling for Navigation Links ---
-      // No changes needed here, it targets sections by ID which remain static
       navItems.forEach(item => {
         item.addEventListener('click', (e) => {
           const sectionId = item.getAttribute('data-section');
@@ -387,11 +451,12 @@ const $ = selector => document.querySelector(selector);
              const bodyRect = document.body.getBoundingClientRect().top;
              const elementRect = targetSection.getBoundingClientRect().top;
              const elementPosition = elementRect - bodyRect;
-             const offsetPosition = elementPosition + offset; // Adjust for potential fixed header/nav height
+             // Use scrollY for consistent calculation regardless of body position
+             const offsetPosition = window.scrollY + elementRect - offset;
 
              // Check if already near the target to avoid unnecessary scroll
              if (targetSection.classList.contains('active')) {
-                 if (Math.abs(window.scrollY - offsetPosition) < 50) {
+                 if (Math.abs(window.scrollY - (offsetPosition - offset)) < 50) { // Adjust check based on scrollY
                     return; // Don't scroll if already close
                  }
              }
@@ -414,6 +479,11 @@ const $ = selector => document.querySelector(selector);
       // --- About Me Photo Swiper ---
       let aboutSwiperInstance = null;
       const setupAboutSwiper = () => {
+          // Check if Swiper library is loaded and the container exists
+          if (typeof Swiper === 'undefined' || !$('.about-swiper')) {
+              console.warn("Swiper library not loaded or .about-swiper container not found. Skipping Swiper setup.");
+              return;
+          }
           if (aboutSwiperInstance) {
               aboutSwiperInstance.destroy(true, true); // Destroy existing instance
           }
@@ -447,7 +517,6 @@ const $ = selector => document.querySelector(selector);
       }
 
       // --- About Me Content Toggle (Professional/Brainrot) ---
-      // No changes needed here, it targets static elements
       aboutToggleBtns.forEach(btn => {
           btn.addEventListener('click', () => {
               if (btn.classList.contains('active')) return; // Do nothing if already active
@@ -512,6 +581,7 @@ const $ = selector => document.querySelector(selector);
                   startY = null;
                   isDragging = false;
 
+                  // Prevent flip if clicking a link, dragging, or already animating
                   if (e.target.closest('.project-link') || wasDragging || (flipTween && flipTween.isActive())) {
                       return;
                   }
@@ -554,8 +624,9 @@ const $ = selector => document.querySelector(selector);
 
       const filterAndSearchProjects = () => {
           const query = searchQuery.toLowerCase().trim(); // Lowercase and trim search query
-          const hasContextFilter = activeFilters.context.length > 0;
-          const hasTechnologyFilter = activeFilters.technology.length > 0;
+          // Ensure activeFilters has keys for context and technology before checking length
+          const hasContextFilter = activeFilters.context && activeFilters.context.length > 0;
+          const hasTechnologyFilter = activeFilters.technology && activeFilters.technology.length > 0;
           let visibleProjectCount = 0; // Counter for visible projects
           const currentProjectCards = $$('#projects .project-card'); // Get current cards
 
@@ -617,7 +688,7 @@ const $ = selector => document.querySelector(selector);
               }
 
               // Determine final visibility
-              let shouldShow = categoryMatch && searchMatch; // Use let for potential reassignment (though not needed here, good practice if logic changed)
+              let shouldShow = categoryMatch && searchMatch;
               // console.log(`  Card: "${title}" -> Cat Match: ${categoryMatch}, Search Match: ${searchMatch}, Show: ${shouldShow}`);
 
               // Use GSAP.set for immediate visibility changes to avoid animation conflicts
@@ -647,7 +718,11 @@ const $ = selector => document.querySelector(selector);
 
       // --- Filter Dropdown Logic ---
       const setupFilterDropdowns = (categoriesData) => {
-          if (!categoriesData || !filterControls) return; // Guard clause
+          // Guard clause: Check if categoriesData exists and is an object, and filterControls exists
+          if (!categoriesData || typeof categoriesData !== 'object' || !filterControls) {
+              console.warn("setupFilterDropdowns: Invalid categoriesData or filterControls element not found.");
+              return;
+          }
 
           // Clear previous dropdowns (if any)
           $$('.filter-dropdown').forEach(dd => dd.remove());
@@ -660,6 +735,11 @@ const $ = selector => document.querySelector(selector);
 
           // Dynamically create dropdowns for each top-level category group in data.json
           Object.entries(categoriesData).forEach(([groupName, categoriesMap]) => {
+              // Ensure categoriesMap is an object before trying to get entries
+              if (typeof categoriesMap !== 'object' || categoriesMap === null) {
+                  console.warn(`setupFilterDropdowns: Invalid categoriesMap for group '${groupName}'. Skipping.`);
+                  return;
+              }
               // Convert category map to sorted array of {value, display}
               const categoryList = Object.entries(categoriesMap)
                   .map(([value, display]) => ({ value, display }))
@@ -713,7 +793,9 @@ const $ = selector => document.querySelector(selector);
                   $$('.filter-dropdown-panel.show').forEach(openPanel => {
                       if (openPanel !== panel) {
                           openPanel.classList.remove('show');
-                          openPanel.previousElementSibling.classList.remove('open');
+                          if (openPanel.previousElementSibling) { // Check if sibling exists
+                              openPanel.previousElementSibling.classList.remove('open');
+                          }
                           gsap.to(openPanel, { opacity: 0, y: -5, duration: 0.15, pointerEvents: 'none' }); // Animate closed
                       }
                   });
@@ -749,8 +831,10 @@ const $ = selector => document.querySelector(selector);
                   dropdownButton.classList.toggle('active', activeFilters[group].length > 0);
 
                   // Check if *any* dropdown filter is active across all dynamic groups
-                  const anyDropdownFilterActive = Object.values(activeFilters)
-                                                    .some(groupArray => Array.isArray(groupArray) && groupArray.length > 0);
+                  const anyDropdownFilterActive = Object.keys(activeFilters)
+                                                    .filter(key => key !== 'featured') // Exclude 'featured' key
+                                                    .some(groupKey => Array.isArray(activeFilters[groupKey]) && activeFilters[groupKey].length > 0);
+
 
                   $('.filter-btn[data-filter="all"]')?.classList.toggle('active', !anyDropdownFilterActive && !activeFilters.featured);
                   filterAndSearchProjects();
@@ -768,15 +852,21 @@ const $ = selector => document.querySelector(selector);
                       $$('.filter-dropdown-panel input[type="checkbox"]').forEach(cb => cb.checked = false);
                       $$('.filter-dropdown-panel').forEach(p => {
                           p.classList.remove('show');
-                          p.previousElementSibling.classList.remove('open'); // Deactivate button
+                          if (p.previousElementSibling) { // Check if sibling exists
+                              p.previousElementSibling.classList.remove('open'); // Deactivate button
+                          }
                           gsap.to(p, { opacity: 0, y: -5, duration: 0.15, pointerEvents: 'none' }); // Animate closed
                       });
                       newBtn.classList.add('active');
                       // Reset all filter groups dynamically, keep 'featured' state
                       activeFilters = { featured: false }; // Start fresh, featured handled below
-                      Object.keys(categoriesData).forEach(groupName => { activeFilters[groupName] = []; }); // Add all groups from data as empty arrays
+                      // Ensure categoriesData exists before iterating
+                      if (categoriesData && typeof categoriesData === 'object') {
+                          Object.keys(categoriesData).forEach(groupName => { activeFilters[groupName] = []; }); // Add all groups from data as empty arrays
+                      }
                       filterLogic = 'and'; // Reset logic
-                      $('#filter-logic-and').checked = true; // Reset radio button
+                      const logicAndRadio = $('#filter-logic-and');
+                      if (logicAndRadio) logicAndRadio.checked = true; // Reset radio button
                       // Reset visual state of logic toggle labels
                       $$('.filter-logic-toggle label').forEach(l => l.classList.remove('active'));
                       $('label[for="filter-logic-and"]')?.classList.add('active');
@@ -784,8 +874,9 @@ const $ = selector => document.querySelector(selector);
                       newBtn.classList.toggle('active');
                       activeFilters.featured = newBtn.classList.contains('active');
                       // Check if *any* dropdown filter is active across all dynamic groups
-                      const anyDropdownFilterActive = Object.values(activeFilters)
-                                                        .some(groupArray => Array.isArray(groupArray) && groupArray.length > 0);
+                      const anyDropdownFilterActive = Object.keys(activeFilters)
+                                                        .filter(key => key !== 'featured')
+                                                        .some(groupKey => Array.isArray(activeFilters[groupKey]) && activeFilters[groupKey].length > 0);
                       $('.filter-btn[data-filter="all"]')?.classList.toggle('active', !activeFilters.featured && !anyDropdownFilterActive);
                   }
                   filterAndSearchProjects();
@@ -820,7 +911,9 @@ const $ = selector => document.querySelector(selector);
                       if (!e.target.closest('.filter-dropdown')) {
                           $$('.filter-dropdown-panel.show').forEach(panel => {
                               panel.classList.remove('show');
-                              panel.previousElementSibling.classList.remove('open');
+                              if (panel.previousElementSibling) { // Check if sibling exists
+                                  panel.previousElementSibling.classList.remove('open');
+                              }
                               gsap.to(panel, { opacity: 0, y: -5, duration: 0.15, pointerEvents: 'none' }); // Animate closed
                           });
                       }
@@ -832,21 +925,26 @@ const $ = selector => document.querySelector(selector);
 
 
       // --- Search Input Handling ---
-      let searchTimeout;
-      projectSearchInput.addEventListener('input', () => {
-         clearTimeout(searchTimeout); // Debounce input
-         searchTimeout = setTimeout(() => {
-             searchQuery = projectSearchInput.value; // Update search query
-             filterAndSearchProjects(); // Apply filters and search
-         }, 300);
-      });
+      if (projectSearchInput) { // Check if element exists
+          let searchTimeout;
+          projectSearchInput.addEventListener('input', () => {
+             clearTimeout(searchTimeout); // Debounce input
+             searchTimeout = setTimeout(() => {
+                 searchQuery = projectSearchInput.value; // Update search query
+                 filterAndSearchProjects(); // Apply filters and search
+             }, 300);
+          });
+      } else {
+          console.warn("Project search input not found.");
+      }
+
 
       // --- Programming Description Pagination Logic ---
       const updateDescPagination = () => {
           if (!programmingPages || programmingPages.length === 0) return; // Guard clause
 
           // Fade out current page
-          const currentActivePage = programmingDescriptionContainer.querySelector('p.active');
+          const currentActivePage = programmingDescriptionContainer?.querySelector('p.active'); // Optional chaining
           if (currentActivePage && programmingPages[descCurrentPage] !== currentActivePage) {
               currentActivePage.classList.remove('active');
               gsap.to(currentActivePage, { opacity: 0, duration: 0.2 });
@@ -865,7 +963,7 @@ const $ = selector => document.querySelector(selector);
           if (descNextPageBtn) descNextPageBtn.disabled = false; // Always enabled for looping
 
           // Re-initialize tilt for buttons if on desktop
-          if (window.innerWidth > 768) {
+          if (window.innerWidth > 768 && typeof VanillaTilt !== 'undefined') { // Check if tilt loaded
               [descPrevPageBtn, descNextPageBtn].forEach(btn => {
                   if (btn && btn.vanillaTilt) { btn.vanillaTilt.destroy(); VanillaTilt.init(btn, tiltOptions); }
                   else if (btn && !btn.vanillaTilt) { VanillaTilt.init(btn, tiltOptions); }
@@ -900,8 +998,9 @@ const $ = selector => document.querySelector(selector);
               });
               updateDescPagination(); // Initialize first page view
           } else {
-              // Hide controls if no pages
-              $('.pagination-controls').style.display = 'none';
+              // Hide controls if no pages or buttons missing
+              const controls = $('.pagination-controls');
+              if (controls) controls.style.display = 'none';
           }
       }
 
@@ -932,7 +1031,7 @@ const $ = selector => document.querySelector(selector);
           if (aboutNextPageBtn) aboutNextPageBtn.disabled = false; // Always enabled
 
           // Re-initialize tilt for buttons if needed (though tilt is usually disabled on mobile)
-          if (window.innerWidth <= 768) {
+          if (window.innerWidth <= 768 && typeof VanillaTilt !== 'undefined') { // Check if tilt loaded
                [aboutPrevPageBtn, aboutNextPageBtn].forEach(btn => {
                    if (btn && btn.vanillaTilt) { btn.vanillaTilt.destroy(); VanillaTilt.init(btn, tiltOptions); }
                    else if (btn && !btn.vanillaTilt) { VanillaTilt.init(btn, tiltOptions); }
@@ -977,8 +1076,9 @@ const $ = selector => document.querySelector(selector);
               isAboutPaginated = true; // Mark as paginated
               updateAboutPagination(); // Initialize the first page view
           } else {
-              // Hide controls if no pages
-              $('.about-pagination-controls').style.display = 'none';
+              // Hide controls if no pages or buttons missing
+              const controls = $('.about-pagination-controls');
+              if (controls) controls.style.display = 'none';
               isAboutPaginated = false;
           }
       };
@@ -1024,6 +1124,12 @@ const $ = selector => document.querySelector(selector);
        const setupTappableFeedback = () => {
            const tappableElements = gsap.utils.toArray('.nav-item, .theme-toggle, .about-toggle-btn, .filter-btn, #social .social-card, .project-link, .detail-card, .pagination-btn, .about-pagination-btn, .skill-accordion-header, .filter-dropdown-btn');
            tappableElements.forEach(el => {
+               // --- ADD THIS CHECK ---
+               if (!el) {
+                   console.warn("setupTappableFeedback: Found a null element in selector list.");
+                   return; // Skip this null element
+               }
+               // --- END ADDED CHECK ---
                el.style.webkitTapHighlightColor = 'transparent'; // Remove blue tap highlight on iOS
                let tapTween;
                // Scale down on pointer down
@@ -1064,11 +1170,28 @@ const $ = selector => document.querySelector(selector);
     // --- Content Population Functions ---
 
     const populateSocialLinks = (links) => {
-        if (!socialContainer || !links || links.length === 0) {
+        // Check if container exists and links is an array
+        if (!socialContainer) {
+            console.warn("populateSocialLinks: Social container not found.");
             return;
         }
+        if (!Array.isArray(links)) {
+            console.warn("populateSocialLinks: links data is not an array.");
+            socialContainer.innerHTML = '<p>Social links unavailable.</p>'; // Provide feedback
+            return;
+        }
+        if (links.length === 0) {
+            socialContainer.innerHTML = '<p>No social links provided.</p>'; // Handle empty array
+            return;
+        }
+
         socialContainer.innerHTML = ''; // Clear existing links
         links.forEach(link => {
+            // Basic check for link properties
+            if (!link || !link.url || !link.name) {
+                console.warn("populateSocialLinks: Invalid link data found:", link);
+                return; // Skip this link
+            }
             const linkElement = document.createElement('a');
             linkElement.href = link.url;
             linkElement.classList.add('social-link');
@@ -1082,7 +1205,7 @@ const $ = selector => document.querySelector(selector);
 
             const iconDiv = document.createElement('div');
             iconDiv.classList.add('social-icon');
-            iconDiv.innerHTML = link.icon || ''; // Use provided SVG icon
+            iconDiv.innerHTML = link.icon || ''; // Use provided SVG icon (default to empty if missing)
 
             const nameDiv = document.createElement('div');
             nameDiv.classList.add('social-name');
@@ -1097,75 +1220,132 @@ const $ = selector => document.querySelector(selector);
 
     const populateAboutSection = (aboutData) => {
         if (!aboutData) {
+             console.warn("populateAboutSection: No aboutData provided.");
+             // Optionally clear containers or show default message
+             if (aboutProfessionalContainer) aboutProfessionalContainer.innerHTML = '';
+             if (aboutSlangContainer) aboutSlangContainer.innerHTML = '';
+             if (aboutProfessionalPagesContainer) aboutProfessionalPagesContainer.innerHTML = '';
+             if (aboutPhotoContainer) aboutPhotoContainer.innerHTML = '';
+             if (funFactsContainer) funFactsContainer.innerHTML = '';
              return;
         }
 
         // Populate Descriptions
-        if (aboutData.professional && aboutProfessionalContainer) {
+        if (Array.isArray(aboutData.professional) && aboutProfessionalContainer) { // Check if array
             aboutProfessionalContainer.innerHTML = aboutData.professional.map(p => `<p>${p}</p>`).join('');
+        } else if (aboutProfessionalContainer) {
+            console.warn("populateAboutSection: aboutData.professional is missing or not an array.");
+            aboutProfessionalContainer.innerHTML = '<p>Professional description unavailable.</p>';
         }
-        if (aboutData.slang && aboutSlangContainer) {
+        if (Array.isArray(aboutData.slang) && aboutSlangContainer) { // Check if array
             aboutSlangContainer.innerHTML = aboutData.slang.map(p => `<p>${p}</p>`).join('');
+        } else if (aboutSlangContainer) {
+             console.warn("populateAboutSection: aboutData.slang is missing or not an array.");
+             aboutSlangContainer.innerHTML = '<p>Slang description unavailable.</p>';
         }
         // Populate Mobile Description Container (used for pagination)
-        if (aboutData.professional && aboutProfessionalPagesContainer) {
+        if (Array.isArray(aboutData.professional) && aboutProfessionalPagesContainer) { // Check if array
             aboutProfessionalPagesContainer.innerHTML = aboutData.professional.map(p => `<p>${p}</p>`).join('');
             // Update the pages array reference for pagination logic
             aboutProfessionalPages = $$('#about-professional-pages p');
             aboutTotalPages = aboutProfessionalPages.length;
+        } else if (aboutProfessionalPagesContainer) {
+             console.warn("populateAboutSection: aboutData.professional (for mobile) is missing or not an array.");
+             aboutProfessionalPagesContainer.innerHTML = '<p>Description unavailable.</p>';
+             aboutProfessionalPages = [];
+             aboutTotalPages = 0;
         }
 
+
         // Populate Photos
-        if (aboutData.photos && aboutPhotoContainer) {
+        if (Array.isArray(aboutData.photos) && aboutPhotoContainer) { // Check if array
             aboutPhotoContainer.innerHTML = ''; // Clear existing slides
             aboutData.photos.forEach(photo => {
                 const slide = document.createElement('div');
                 slide.classList.add('swiper-slide');
-                slide.innerHTML = `<img src="${photo.src}" alt="${photo.alt}">`;
-                aboutPhotoContainer.appendChild(slide);
+                // Basic check for photo properties
+                if (photo && photo.src && photo.alt) {
+                    slide.innerHTML = `<img src="${photo.src}" alt="${photo.alt}">`;
+                    aboutPhotoContainer.appendChild(slide);
+                } else {
+                    console.warn("populateAboutSection: Invalid photo data found:", photo);
+                }
             });
+        } else if (aboutPhotoContainer) {
+            console.warn("populateAboutSection: aboutData.photos is missing or not an array.");
+            aboutPhotoContainer.innerHTML = ''; // Clear just in case
         }
 
+
         // Populate Fun Facts Marquee
-        if (aboutData.funFacts && funFactsContainer) {
+        if (Array.isArray(aboutData.funFacts) && funFactsContainer) { // Check if array
             const marqueeInner = document.createElement('div');
             marqueeInner.classList.add('marquee-inner');
             aboutData.funFacts.forEach(fact => {
-                marqueeInner.innerHTML += `
-                    <div class="detail-card js-tilt">
-                        <h3>${fact.title}</h3>
-                        <p>${fact.fact}</p>
-                    </div>`;
+                 // Basic check for fact properties
+                 if (fact && fact.title && fact.fact) {
+                    marqueeInner.innerHTML += `
+                        <div class="detail-card js-tilt">
+                            <h3>${fact.title}</h3>
+                            <p>${fact.fact}</p>
+                        </div>`;
+                 } else {
+                     console.warn("populateAboutSection: Invalid fun fact data found:", fact);
+                 }
             });
-            // Duplicate for seamless loop
-            const marqueeInnerClone = marqueeInner.cloneNode(true);
-            marqueeInnerClone.setAttribute('aria-hidden', 'true');
+            // Duplicate for seamless loop only if facts were added
+            if (marqueeInner.children.length > 0) {
+                const marqueeInnerClone = marqueeInner.cloneNode(true);
+                marqueeInnerClone.setAttribute('aria-hidden', 'true');
 
-            funFactsContainer.innerHTML = ''; // Clear existing
-            funFactsContainer.appendChild(marqueeInner);
-            funFactsContainer.appendChild(marqueeInnerClone);
+                funFactsContainer.innerHTML = ''; // Clear existing
+                funFactsContainer.appendChild(marqueeInner);
+                funFactsContainer.appendChild(marqueeInnerClone);
+            } else {
+                 funFactsContainer.innerHTML = ''; // Clear if no valid facts
+            }
+        } else if (funFactsContainer) {
+            console.warn("populateAboutSection: aboutData.funFacts is missing or not an array.");
+            funFactsContainer.innerHTML = ''; // Clear just in case
         }
     };
 
     const populateCodeSection = (codeData) => {
         if (!codeData) {
-            return;
+             console.warn("populateCodeSection: No codeData provided.");
+             // Optionally clear containers
+             if (programmingDescriptionContainer) programmingDescriptionContainer.innerHTML = '';
+             if (skillAccordionContainer) skillAccordionContainer.innerHTML = '';
+             return;
         }
 
         // Populate Programming Description
-        if (codeData.description && programmingDescriptionContainer) {
+        if (Array.isArray(codeData.description) && programmingDescriptionContainer) { // Check if array
             programmingDescriptionContainer.innerHTML = codeData.description.map(p => `<p>${p}</p>`).join('');
             // Update pages reference and total for pagination
             programmingPages = $$('#programming-description-pages p');
             descTotalPages = programmingPages.length;
+        } else if (programmingDescriptionContainer) {
+            console.warn("populateCodeSection: codeData.description is missing or not an array.");
+            programmingDescriptionContainer.innerHTML = '<p>Programming description unavailable.</p>';
+            programmingPages = [];
+            descTotalPages = 0;
         }
 
+
         // Populate Skills Accordion
-        if (codeData.skills && skillAccordionContainer) {
+        if (Array.isArray(codeData.skills) && skillAccordionContainer) { // Check if array
             skillAccordionContainer.innerHTML = ''; // Clear existing
             codeData.skills.forEach(skillCategory => {
+                 // Basic check for category properties
+                 if (!skillCategory || !skillCategory.category || !Array.isArray(skillCategory.items)) {
+                     console.warn("populateCodeSection: Invalid skill category data found:", skillCategory);
+                     return; // Skip this category
+                 }
+
                 const itemDiv = document.createElement('div');
                 itemDiv.classList.add('skill-accordion-item');
+
 
                 const headerBtn = document.createElement('button');
                 headerBtn.classList.add('skill-accordion-header');
@@ -1180,6 +1360,11 @@ const $ = selector => document.querySelector(selector);
                 skillList.classList.add('skill-list');
 
                 skillCategory.items.forEach(skill => {
+                     // Basic check for skill properties
+                     if (!skill || !skill.name || typeof skill.percent !== 'number') {
+                         console.warn("populateCodeSection: Invalid skill item data found:", skill);
+                         return; // Skip this skill
+                     }
                     const skillItem = document.createElement('li');
                     skillItem.classList.add('skill-item');
                     skillItem.innerHTML = `
@@ -1194,29 +1379,52 @@ const $ = selector => document.querySelector(selector);
                     skillList.appendChild(skillItem);
                 });
 
-                contentDiv.appendChild(skillList);
-                itemDiv.appendChild(headerBtn);
-                itemDiv.appendChild(contentDiv);
-                skillAccordionContainer.appendChild(itemDiv);
+                // Only append if the list has items
+                if (skillList.children.length > 0) {
+                    contentDiv.appendChild(skillList);
+                    itemDiv.appendChild(headerBtn);
+                    itemDiv.appendChild(contentDiv);
+                    skillAccordionContainer.appendChild(itemDiv);
+                }
             });
+        } else if (skillAccordionContainer) {
+            console.warn("populateCodeSection: codeData.skills is missing or not an array.");
+            skillAccordionContainer.innerHTML = '<p>Skills information unavailable.</p>';
         }
     };
 
+
     const populateProjects = (projectsData) => {
-        if (!projectsData || !projectsGrid) {
-            return;
+        // Check for projectsData object and projectsGrid element
+        if (!projectsData || typeof projectsData !== 'object') {
+             console.warn("populateProjects: No projectsData object provided.");
+             if (projectsGrid) projectsGrid.innerHTML = '<p>Project data unavailable.</p>';
+             if (noProjectsMessage) noProjectsMessage.style.display = 'block';
+             return;
         }
+         if (!projectsGrid) {
+             console.warn("populateProjects: projectsGrid element not found.");
+             return;
+         }
 
         projectsGrid.innerHTML = ''; // Clear existing projects
-        if (projectsData.items && projectsData.items.length > 0) {
+
+        // Check if projectsData.items is an array
+        if (Array.isArray(projectsData.items) && projectsData.items.length > 0) {
             projectsData.items.forEach(project => {
+                 // Basic check for project properties
+                 if (!project || !project.title || !Array.isArray(project.categories) || !Array.isArray(project.displayTags) || !project.thumbnail || !project.alt || !project.description || !project.link || !project.linkText) {
+                     console.warn("populateProjects: Invalid project data found:", project);
+                     return; // Skip this project
+                 }
+
                 const card = document.createElement('div');
                 card.classList.add('project-card');
                 // Combine all categories (lowercase) for data-category attribute
-                const dataCategories = project.categories.map(cat => cat.toLowerCase()).join(' ');
+                const dataCategories = project.categories.map(cat => String(cat).toLowerCase()).join(' '); // Ensure categories are strings
                 card.setAttribute('data-category', dataCategories);
 
-                const isFeatured = project.categories.includes('featured');
+                const isFeatured = project.categories.map(cat => String(cat).toLowerCase()).includes('featured'); // Ensure check is lowercase
                 const displayTagsHTML = project.displayTags.map(tag => `<span class="project-category">${tag}</span>`).join('');
 
                 card.innerHTML = `
@@ -1242,13 +1450,22 @@ const $ = selector => document.querySelector(selector);
             projectsNodeList = $$('#projects .project-card');
             projectsArray = Array.from(projectsNodeList);
         } else {
-            // Handle case where there are no projects in data.json
+            // Handle case where projectsData.items is missing, not an array, or empty
+            console.warn("populateProjects: projectsData.items is missing, not an array, or empty.");
             if (noProjectsMessage) noProjectsMessage.style.display = 'block';
+            projectsNodeList = []; // Ensure node list is empty
+            projectsArray = []; // Ensure array is empty
         }
 
-        // Setup filters using the categories from data
-        setupFilterDropdowns(projectsData.categories);
-        filterAndSearchProjects(); // Apply initial filter/search state
+        // Setup filters using the categories from data (check if categories exist)
+        if (projectsData.categories && typeof projectsData.categories === 'object') {
+            setupFilterDropdowns(projectsData.categories);
+        } else {
+            console.warn("populateProjects: projectsData.categories is missing or not an object. Skipping filter setup.");
+            // Optionally hide filter controls if categories are missing
+            if(filterControlsGroup) filterControlsGroup.style.display = 'none';
+        }
+        filterAndSearchProjects(); // Apply initial filter/search state (will handle empty projectsArray)
     };
 
     // --- Function to Initialize Components Dependent on Dynamic Content ---
