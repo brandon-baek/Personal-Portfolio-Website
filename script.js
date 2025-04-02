@@ -5,34 +5,27 @@ const $ = selector => document.querySelector(selector);
     let portfolioData = {}; // To store fetched data
 
     // --- Theme Handling ---
-    // Expanded viewBox further for smaller icon appearance, stroke width 2
-    const sunIcon = `<svg id="theme-icon" viewBox="-10 -10 44 44" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>`;
-    const moonIcon = `<svg id="theme-icon" viewBox="-10 -10 44 44" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>`;
+    // Standard viewBox 0 0 24 24, stroke-width 2
+    const sunIconSVGContent = `<circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>`;
+    const moonIconSVGContent = `<path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>`;
 
     const applyTheme = (theme) => {
         document.body.classList.toggle('light-mode', theme === 'light');
-        const themeIconContainer = $('#theme-toggle');
-        if (themeIconContainer) {
-            // Directly set innerHTML for reliability
-            themeIconContainer.innerHTML = theme === 'light' ? moonIcon : sunIcon;
-            // Ensure SVG attributes are correct after setting innerHTML
-            const svgElement = themeIconContainer.querySelector('svg');
-            if (svgElement) {
-                svgElement.setAttribute('viewBox', '-10 -10 44 44'); // Ensure expanded viewBox further
-                svgElement.setAttribute('stroke-width', '2'); // Ensure reverted stroke-width
-                // Apply correct stroke/fill based on theme immediately
-                if (theme === 'light') {
-                    svgElement.style.stroke = 'var(--dark-green)';
-                    svgElement.style.fill = 'none';
-                } else {
-                    svgElement.style.stroke = 'var(--off-white)';
-                    // svgElement.style.fill = 'var(--off-white)'; // Optional: fill moon
-                }
-            }
+        const svgElement = $('#theme-icon'); // Select the SVG directly
+
+        if (svgElement) {
+            // Update the SVG content directly instead of replacing the whole element
+            svgElement.innerHTML = theme === 'light' ? moonIconSVGContent : sunIconSVGContent;
+
+            // Let CSS handle stroke/fill via classes or variables
+            // No need to set viewBox or stroke-width here if defined in HTML/CSS
+        } else {
+            console.error("Theme icon SVG element not found!");
         }
+
         localStorage.setItem('theme', theme);
         currentTheme = theme;
-        // Let CSS handle nav icon transition sync
+        // CSS will handle color transitions based on body class
     };
 
     // --- Levenshtein Distance (for potential fuzzy search improvements later) ---

@@ -1205,8 +1205,8 @@
       position: fixed;
       top: 30px;
       right: 30px;
-      width: 55px;  /* Reverted button size increase */
-      height: 55px; /* Reverted button size increase */
+      width: 50px;  /* Consistent size */
+      height: 50px; /* Consistent size */
       border-radius: 50%;
       background-color: rgba(245, 245, 240, 0.6); /* Match nav light */
       border: 1px solid var(--border-color-light);
@@ -1227,8 +1227,9 @@
         transition: stroke 0.4s ease, fill 0.4s ease, transform 0.3s ease; /* Added transform transition */
         stroke: var(--dark-green);
         fill: none;
-        /* width and height properties removed entirely */
-        stroke-width: 2; /* Reverted stroke width */
+        width: 24px; /* Explicit width */
+        height: 24px; /* Explicit height */
+        stroke-width: 2; /* Consistent stroke width */
         /* Removed padding */
     }
 
@@ -1312,7 +1313,7 @@
              transform: scale(1.1);
         }
 
-        .theme-toggle { top: 20px; right: 20px; width: 50px; height: 50px; } /* Reverted mobile button size increase */
+        .theme-toggle { top: 20px; right: 20px; /* Removed width/height override */ }
         /* #projects .projects-header adjusted above for general wrapping */
         .btn-base { /* Adjust base button padding for mobile */
              padding: 6px 14px;
