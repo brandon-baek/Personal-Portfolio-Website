@@ -1188,12 +1188,23 @@ const $ = selector => document.querySelector(selector);
             const sectionObserver = new IntersectionObserver((entries, observer) => {
                 entries.forEach(entry => {
                     if (entry.isIntersecting) {
-                        entry.target.classList.add('visible');
-                        // Optional: Unobserve if you only want the animation once per page load
-                        // observer.unobserve(entry.target);
+                        // Fade in using GSAP
+                        gsap.to(entry.target, {
+                            opacity: 1,
+                            y: 0,
+                            duration: 0.8, // Match previous CSS duration
+                            ease: 'cubic-bezier(0.16, 1, 0.3, 1)', // Match previous CSS ease
+                            overwrite: true // Prevent conflicting animations
+                        });
                     } else {
-                        // Remove 'visible' when it leaves the viewport to allow re-animation
-                        entry.target.classList.remove('visible');
+                        // Fade out using GSAP (optional, but good practice)
+                        gsap.to(entry.target, {
+                            opacity: 0,
+                            y: 30, // Reset to initial downward position
+                            duration: 0.4, // Faster fade-out
+                            ease: 'power1.in',
+                            overwrite: true
+                        });
                     }
                 });
             }, observerOptions);
