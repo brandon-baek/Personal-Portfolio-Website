@@ -105,15 +105,16 @@
       "status": {
         "featured": "Featured",
         "active": "Active",
-        "archived": "Archived"
+        "lp-active": "Low-priority Active",
+        "completed": "Completed"
       }
     },
     "items": [
       {
         "id": "bora",
         "title": "Bora",
-        "categories": ["ai-ml", "featured"],
-        "displayTags": ["AI/ML", "Featured"],
+        "categories": ["ai-ml", "featured", "active"],
+        "displayTags": ["AI/ML", "Featured", "Active"],
         "thumbnail": "Images/Project Thumbnails/bora.png",
         "alt": "Bora Small Language Model",
         "description": "Small Language Models (SLMs) developed and trained from scratch using free GPU resources (Kaggle). Includes BoraKits (Jupyter Notebooks for training).",
@@ -123,8 +124,8 @@
       {
         "id": "ai-voice-assistant",
         "title": "AI Voice Assistant",
-        "categories": ["ai-ml"],
-        "displayTags": ["AI/ML"],
+        "categories": ["ai-ml", "completed"],
+        "displayTags": ["AI/ML", "Completed"],
         "thumbnail": "Images/Project Thumbnails/aivoiceassistant.png",
         "alt": "AI Voice Assistant",
         "description": "An AI Voice Assistant based on Google's Gemini. Specifically designed for macOS devices.",
@@ -134,8 +135,8 @@
       {
         "id": "ap-comp-sci",
         "title": "AP Computer Science",
-        "categories": ["misc"],
-        "displayTags": ["Miscellaneous"],
+        "categories": ["misc", "active"],
+        "displayTags": ["Miscellaneous", "Active"],
         "thumbnail": "Images/Project Thumbnails/apcomputerscience.png",
         "alt": "AP Computer Science Files",
         "description": "Repository containing files (Labs, HW, Notes, Exercises) for a High School AP Computer Science class (1st Semester).",
@@ -145,8 +146,8 @@
       {
         "id": "california-housing",
         "title": "California Housing Analysis",
-        "categories": ["data-science", "ai-ml"],
-        "displayTags": ["Data Science", "AI/ML"],
+        "categories": ["data-science", "ai-ml", "completed"],
+        "displayTags": ["Data Science", "AI/ML", "Completed"],
         "thumbnail": "Images/Project Thumbnails/californiahousinganalysis.png",
         "alt": "California Housing Analysis",
         "description": "Data exploration and prediction modeling (Multiple Linear Regression) on the California Housing Dataset using Google Colab.",
@@ -156,8 +157,8 @@
       {
         "id": "emailchat",
         "title": "EmailChat",
-        "categories": ["misc"],
-        "displayTags": ["Miscellaneous"],
+        "categories": ["misc", "lp-active"],
+        "displayTags": ["Miscellaneous", "Low-priority Active"],
         "thumbnail": "Images/Project Thumbnails/emailchat.png",
         "alt": "EmailChat Program",
         "description": "An email-based \"Instant\" Messaging program utilizing IMAP and SMTP to send/receive emails formatted as a chat UI.",
@@ -167,8 +168,8 @@
       {
         "id": "fluent-discord-bot",
         "title": "Fluent Discord Bot",
-        "categories": ["misc"],
-        "displayTags": ["Miscellaneous"],
+        "categories": ["misc", "lp-active"],
+        "displayTags": ["Miscellaneous", "Low-priority Active"],
         "thumbnail": "Images/Project Thumbnails/fluentdiscordbot.png",
         "alt": "Fluent Discord Translation Bot",
         "description": "A Discord translation bot using Google Translate. Features automatic translation in selected channels and user-specific embed colors.",
@@ -178,8 +179,8 @@
       {
         "id": "mnist-knn",
         "title": "MNIST KNN Classifier",
-        "categories": ["ai-ml", "data-science"],
-        "displayTags": ["AI/ML", "Data Science"],
+        "categories": ["ai-ml", "data-science", "completed"],
+        "displayTags": ["AI/ML", "Data Science", "Completed"],
         "thumbnail": "Images/Project Thumbnails/mnistknnclassifier.png",
         "alt": "MNIST KNN Classifier",
         "description": "Predicts handwritten digits from the MNIST dataset using the K-Nearest Neighbors algorithm (non-ML AI approach) via Google Colab.",
@@ -189,8 +190,8 @@
       {
         "id": "portfolio-website",
         "title": "Portfolio Website",
-        "categories": ["web"],
-        "displayTags": ["Web Development"],
+        "categories": ["web", "active"],
+        "displayTags": ["Web Development", "Active"],
         "thumbnail": "Images/Project Thumbnails/portfoliowebsite.png",
         "alt": "Portfolio Website",
         "description": "The very website you are looking at! Built with HTML, CSS, and JavaScript, featuring animations powered by GSAP.",
@@ -200,8 +201,8 @@
       {
         "id": "random-project-pile",
         "title": "Random Project Pile",
-        "categories": ["misc"],
-        "displayTags": ["Miscellaneous"],
+        "categories": ["misc", "lp-active"],
+        "displayTags": ["Miscellaneous", "Low-priority Active"],
         "thumbnail": "Images/Project Thumbnails/randomprojectpile.png",
         "alt": "Random Project Pile",
         "description": "A collection of various smaller Python projects and scripts created in spare time (e.g., Baek Bank, Bubble Sort, File Organizer).",
@@ -211,8 +212,8 @@
       {
         "id": "numpy-nn",
         "title": "NumPy Neural Network",
-        "categories": ["ai-ml"],
-        "displayTags": ["AI/ML"],
+        "categories": ["ai-ml", "completed"],
+        "displayTags": ["AI/ML", "Completed"],
         "thumbnail": "Images/Project Thumbnails/numpyneuralnetwork.png",
         "alt": "Neural Network",
         "description": "A simplistic Neural Network developed from scratch using only NumPy.",
@@ -222,8 +223,8 @@
       {
         "id": "slm-rag",
         "title": "SLM RAG Project",
-        "categories": ["ai-ml"],
-        "displayTags": ["AI/ML"],
+        "categories": ["ai-ml", "completed"],
+        "displayTags": ["AI/ML", "Completed"],
         "thumbnail": "Images/Project Thumbnails/slmragproject.png",
         "alt": "SLM RAG Project",
         "description": "A simple implementation of Retrieval-Augmented Generation (RAG) enhancing a Small Language Model (SmolLM-360M) with Sentence Transformer embeddings.",
@@ -233,8 +234,8 @@
       {
         "id": "youtube-sentiment",
         "title": "YouTube Sentiment Detection",
-        "categories": ["ai-ml", "data-science"],
-        "displayTags": ["AI/ML", "Data Science"],
+        "categories": ["ai-ml", "data-science", "completed"],
+        "displayTags": ["AI/ML", "Data Science", "Completed"],
         "thumbnail": "Images/Project Thumbnails/youtubecommentsentimentdetection.png",
         "alt": "YouTube Sentiment Detection",
         "description": "A simple Neural Network using Keras, trained on YouTube comments for text sentiment classification. Dataset provided.",
@@ -244,8 +245,8 @@
       {
         "id": "homemade-delights",
         "title": "Homemade Delights",
-        "categories": ["community", "web"],
-        "displayTags": ["Community", "Web Development"],
+        "categories": ["community", "web", "active"],
+        "displayTags": ["Community", "Web Development", "Active"],
         "thumbnail": "Images/Project Thumbnails/homemadedelights.png",
         "alt": "Homemade Delights Website",
         "description": "Student-led project supporting mental health awareness through pastry sales. Website designed using Canva.",
