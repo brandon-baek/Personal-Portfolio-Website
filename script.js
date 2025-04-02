@@ -141,6 +141,7 @@ const $ = selector => document.querySelector(selector);
           setInitialActiveSection(); // Set initial active section after content load
           initializeTilt(); // Initialize tilt after dynamic content is added
           setupTappableFeedback(); // Setup tap feedback after dynamic content
+          setupSectionObserver(); // Setup the fade-in observer
         })
         .catch(error => {
           console.error("Error fetching or processing portfolio data:", error);
@@ -1179,6 +1180,36 @@ const $ = selector => document.querySelector(selector);
                 initializeTilt(); // Re-initialize tilt effect based on new screen size
             }, 250); // Debounce resize events
         });
+
+        // --- Section Fade-in Animation on Scroll ---
+        const setupSectionObserver = () => {
+            const sectionsToObserve = $$('section');
+            if (sectionsToObserve.length === 0) return;
+
+            const observerOptions = {
+                root: null, // Use the viewport as the root
+                rootMargin: '0px 0px -15% 0px', // Trigger when 15% from the bottom enters view
+                threshold: 0.1 // Trigger when 10% of the section is visible
+            };
+
+            const sectionObserver = new IntersectionObserver((entries, observer) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('visible');
+                        // Optional: Unobserve if you only want the animation once per page load
+                        // observer.unobserve(entry.target);
+                    } else {
+                        // Remove 'visible' when it leaves the viewport to allow re-animation
+                        entry.target.classList.remove('visible');
+                    }
+                });
+            }, observerOptions);
+
+            sectionsToObserve.forEach(section => {
+                sectionObserver.observe(section);
+            });
+        };
+        // --- End Section Fade-in ---
 
 
     // --- Content Population Functions ---
