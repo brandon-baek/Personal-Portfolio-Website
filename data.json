@@ -106,7 +106,7 @@
       "status": {
         "featured": "Featured",
         "active": "Active",
-        "lp-active": "Low-priority Active",
+        "idle": "Idle",
         "completed": "Completed"
       }
     },
@@ -158,8 +158,8 @@
       {
         "id": "emailchat",
         "title": "EmailChat",
-        "categories": ["misc", "lp-active"],
-        "displayTags": ["Miscellaneous", "Low-priority Active"],
+        "categories": ["misc", "idle"],
+        "displayTags": ["Miscellaneous", "Idle"],
         "thumbnail": "Images/Project Thumbnails/emailchat.png",
         "alt": "EmailChat Program",
         "description": "An email-based \"Instant\" Messaging program utilizing IMAP and SMTP to send/receive emails formatted as a chat UI.",
@@ -169,8 +169,8 @@
       {
         "id": "fluent-discord-bot",
         "title": "Fluent Discord Bot",
-        "categories": ["misc", "lp-active"],
-        "displayTags": ["Miscellaneous", "Low-priority Active"],
+        "categories": ["misc", "idle"],
+        "displayTags": ["Miscellaneous", "Idle"],
         "thumbnail": "Images/Project Thumbnails/fluentdiscordbot.png",
         "alt": "Fluent Discord Translation Bot",
         "description": "A Discord translation bot using Google Translate. Features automatic translation in selected channels and user-specific embed colors.",
@@ -202,8 +202,8 @@
       {
         "id": "random-project-pile",
         "title": "Random Project Pile",
-        "categories": ["misc", "lp-active"],
-        "displayTags": ["Miscellaneous", "Low-priority Active"],
+        "categories": ["misc", "idle"],
+        "displayTags": ["Miscellaneous", "Idle"],
         "thumbnail": "Images/Project Thumbnails/randomprojectpile.png",
         "alt": "Random Project Pile",
         "description": "A collection of various smaller Python projects and scripts created in spare time (e.g., Baek Bank, Bubble Sort, File Organizer).",

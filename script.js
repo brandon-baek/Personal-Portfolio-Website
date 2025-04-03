@@ -91,7 +91,6 @@ const $ = selector => document.querySelector(selector);
       let descTotalPages = 0; // Will be set after fetch
 
       // --- About Me Mobile Pagination Elements & State ---
-      // const aboutProfessionalPagesContainer = $('#about-professional-pages'); // Already selected above
       let aboutProfessionalPages = []; // Will be populated after fetch
       let aboutPrevPageBtn = $('#about-prev-page-btn'); // Previous button for mobile about (use let)
       let aboutNextPageBtn = $('#about-next-page-btn'); // Next button for mobile about (use let)
@@ -227,7 +226,7 @@ const $ = selector => document.querySelector(selector);
            const tiltedElements = document.querySelectorAll(".js-tilt");
            tiltedElements.forEach(el => { if (el.vanillaTilt) el.vanillaTilt.destroy(); }); // Destroy existing instances
            tiltInstances = []; // Clear existing instances array
-      } // End of destroyTilt
+      }
 
 
       // --- Navigation & ScrollTrigger Setup ---
@@ -518,21 +517,17 @@ const $ = selector => document.querySelector(selector);
 
               // Reset page to 0 if switching TO professional view on mobile
               if (viewToShow === 'professional' && window.innerWidth <= 768) {
-                  // console.log("[Toggle] Switching to Professional on mobile, resetting page to 0."); // DEBUG
                   aboutCurrentPage = 0;
               }
 
               // Hide current, show target
               if (currentActiveDesc) {
-                  // console.log("[Toggle] Hiding current:", currentActiveDesc.id); // DEBUG
                   currentActiveDesc.classList.add('hidden');
               }
               if (targetDesc) {
-                  // console.log("[Toggle] Showing target:", targetDesc.id); // DEBUG
                   targetDesc.classList.remove('hidden');
                   // If switching TO professional on mobile, ensure pagination updates
                   if (viewToShow === 'professional' && window.innerWidth <= 768 && isAboutPaginated) {
-                      // console.log("[Toggle] Calling updateAboutPagination for professional view."); // DEBUG
                       updateAboutPagination(); // Update pagination immediately after showing
                   }
               }
@@ -614,8 +609,6 @@ const $ = selector => document.querySelector(selector);
           let visibleProjectCount = 0; // Counter for visible projects
           const currentProjectCards = $$('#projects .project-card'); // Get current cards
 
-          // console.log('Filtering Projects:', activeFilters, `Logic: ${filterLogic}`, `Query: "${query}"`);
-
           // Get active filter groups (excluding 'featured')
           const activeFilterGroups = Object.keys(activeFilters).filter(group => group !== 'featured' && Array.isArray(activeFilters[group]) && activeFilters[group].length > 0);
 
@@ -682,7 +675,6 @@ const $ = selector => document.querySelector(selector);
 
               // Determine final visibility
               let shouldShow = categoryMatch && searchMatch;
-              // console.log(`  Card: "${title}" -> Cat Match: ${categoryMatch}, Search Match: ${searchMatch}, Show: ${shouldShow}`);
 
               // Use GSAP.set for immediate visibility changes to allow grid reflow
               if (shouldShow) {
@@ -1003,16 +995,13 @@ const $ = selector => document.querySelector(selector);
 
       // --- About Me Mobile Pagination Logic ---
       const updateAboutPagination = () => {
-          // console.log(`[updateAboutPagination] Called. isAboutPaginated: ${isAboutPaginated}, Current Page: ${aboutCurrentPage}`); // DEBUG
           if (!isAboutPaginated || !aboutProfessionalPagesContainer || !aboutProfessionalPages || aboutProfessionalPages.length === 0) {
-              // console.log(`[updateAboutPagination] Aborting - Conditions not met.`); // DEBUG
               return; // Only run if mobile pagination is active and pages exist
           }
 
           // Remove active class from all pages first
           aboutProfessionalPages.forEach((p, index) => {
               if (p.classList.contains('active') && index !== aboutCurrentPage) {
-                  // console.log(`[updateAboutPagination] Removing active from page ${index}`); // DEBUG
                   p.classList.remove('active');
               }
           });
@@ -1020,11 +1009,8 @@ const $ = selector => document.querySelector(selector);
           // Add active class to the target page
           const newActiveAboutPage = aboutProfessionalPages[aboutCurrentPage];
           if (newActiveAboutPage) {
-              // console.log(`[updateAboutPagination] Adding active to page ${aboutCurrentPage}`, newActiveAboutPage); // DEBUG
               newActiveAboutPage.classList.add('active');
               // CSS transition should handle the fade-in based on the .active class
-          } else {
-              // console.log(`[updateAboutPagination] Target page ${aboutCurrentPage} not found.`); // DEBUG
           }
 
           // Update indicator text
@@ -1045,14 +1031,11 @@ const $ = selector => document.querySelector(selector);
 
       // Setup function for mobile pagination listeners
       const setupAboutPagination = () => {
-          // console.log("[setupAboutPagination] Called."); // DEBUG
           aboutProfessionalPages = aboutProfessionalPagesContainer.querySelectorAll('p'); // Select paragraphs directly from container
           aboutTotalPages = aboutProfessionalPages.length;
           aboutCurrentPage = 0; // Reset page
-          // console.log(`[setupAboutPagination] Found ${aboutTotalPages} pages.`); // DEBUG
 
           if (aboutPrevPageBtn && aboutNextPageBtn && aboutProfessionalPages.length > 0) {
-              // console.log("[setupAboutPagination] Setting up listeners and activating pagination."); // DEBUG
               // Clone buttons to remove old listeners
               const newPrevBtn = aboutPrevPageBtn.cloneNode(true);
               aboutPrevPageBtn.parentNode.replaceChild(newPrevBtn, aboutPrevPageBtn);
@@ -1082,7 +1065,6 @@ const $ = selector => document.querySelector(selector);
               isAboutPaginated = true; // Mark as paginated
               updateAboutPagination(); // Initialize the first page view
           } else {
-              // console.log("[setupAboutPagination] Conditions not met (buttons or pages missing). Hiding controls."); // DEBUG
               // Hide controls if no pages or buttons missing
               const controls = $('.about-pagination-controls');
               if (controls) controls.style.display = 'none';
@@ -1092,7 +1074,6 @@ const $ = selector => document.querySelector(selector);
 
       // Teardown function for mobile pagination
       const teardownAboutPagination = () => {
-          // console.log("[teardownAboutPagination] Called."); // DEBUG
           isAboutPaginated = false; // Mark as not paginated
           // Remove active class and reset opacity for paginated paragraphs
           $$('#about-professional-pages p').forEach(p => { // Use selector directly
@@ -1132,12 +1113,10 @@ const $ = selector => document.querySelector(selector);
        const setupTappableFeedback = () => {
            const tappableElements = gsap.utils.toArray('.nav-item, .theme-toggle, .about-toggle-btn, .filter-btn, #social .social-card, .project-link, .detail-card, .pagination-btn, .about-pagination-btn, .skill-accordion-header, .filter-dropdown-btn');
            tappableElements.forEach(el => {
-               // --- ADD THIS CHECK ---
                if (!el) {
                    console.warn("setupTappableFeedback: Found a null element in selector list.");
                    return; // Skip this null element
                }
-               // --- END ADDED CHECK ---
                el.style.webkitTapHighlightColor = 'transparent'; // Remove blue tap highlight on iOS
                let tapTween;
                // Scale down on pointer down
@@ -1301,7 +1280,6 @@ const $ = selector => document.querySelector(selector);
             setTimeout(() => {
                 aboutProfessionalPages = aboutProfessionalPagesContainer.querySelectorAll('p');
                 aboutTotalPages = aboutProfessionalPages.length;
-                // console.log(`[populateAboutSection] Populated mobile pages. Found ${aboutTotalPages} paragraphs.`); // DEBUG
                 // If pagination is already set up (e.g., on resize), update it
                 if (isAboutPaginated) {
                     updateAboutPagination();
@@ -1482,8 +1460,26 @@ const $ = selector => document.querySelector(selector);
                 const dataCategories = project.categories.map(cat => String(cat).toLowerCase()).join(' '); // Ensure categories are strings
                 card.setAttribute('data-category', dataCategories);
 
+                // --- Status Handling ---
+                const statusKeys = ['active', 'idle', 'completed'];
+                let projectStatusKey = null;
+                let projectStatusText = '';
+                for (const key of statusKeys) {
+                    if (project.categories.includes(key)) {
+                        projectStatusKey = key;
+                        projectStatusText = projectsData.categories.status[key] || key.charAt(0).toUpperCase() + key.slice(1); // Get display text or default
+                        break;
+                    }
+                }
+
+                // Filter out status and featured tags from the main display tags
+                const filteredDisplayTags = project.displayTags.filter(tag =>
+                    tag.toLowerCase() !== projectStatusText.toLowerCase() && tag.toLowerCase() !== 'featured'
+                );
+                const displayTagsHTML = filteredDisplayTags.map(tag => `<span class="project-category">${tag}</span>`).join('');
+                // --- End Status Handling ---
+
                 const isFeatured = project.categories.map(cat => String(cat).toLowerCase()).includes('featured'); // Ensure check is lowercase
-                const displayTagsHTML = project.displayTags.map(tag => `<span class="project-category">${tag}</span>`).join('');
 
                 card.innerHTML = `
                     <div class="project-front js-tilt">
@@ -1491,6 +1487,12 @@ const $ = selector => document.querySelector(selector);
                         <div class="project-thumbnail"><img src="${project.thumbnail}" alt="${project.alt}" /></div>
                         <div class="project-info">
                             <h3 class="project-title">${project.title}</h3>
+                            ${projectStatusKey ? `
+                            <div class="project-status">
+                                <span class="status-dot status-${projectStatusKey}"></span>
+                                <span class="status-text">${projectStatusText}</span>
+                            </div>
+                            ` : ''}
                             <div class="project-tags-container">
                                 ${displayTagsHTML}
                             </div>
@@ -1557,4 +1559,4 @@ const $ = selector => document.querySelector(selector);
         }, 0); // Zero delay pushes execution to end of event loop
     }
 
-    }); // End of DOMContentLoaded
+    });
