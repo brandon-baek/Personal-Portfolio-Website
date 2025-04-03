@@ -729,10 +729,9 @@ const $ = selector => document.querySelector(selector);
                   console.warn(`setupFilterDropdowns: Invalid categoriesMap for group '${groupName}'. Skipping.`);
                   return;
               }
-              // Convert category map to sorted array of {value, display}
+
               const categoryList = Object.entries(categoriesMap)
                   .map(([value, display]) => ({ value, display }))
-                  .sort((a, b) => a.display.localeCompare(b.display));
 
               if (categoryList.length === 0) return; // Skip empty groups
 

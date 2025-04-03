@@ -123,6 +123,17 @@
         "linkText": "View on GitHub"
       },
       {
+        "id": "homemade-delights",
+        "title": "Homemade Delights",
+        "categories": ["community", "web", "featured", "active"],
+        "displayTags": ["Community", "Web Development", "Featured", "Active"],
+        "thumbnail": "Images/Project Thumbnails/homemadedelights.png",
+        "alt": "Homemade Delights Website",
+        "description": "Student-led project supporting mental health awareness through pastry sales. Website designed using Canva.",
+        "link": "https://homemade-delights.my.canva.site/",
+        "linkText": "View Website"
+      },
+      {
         "id": "ai-voice-assistant",
         "title": "AI Voice Assistant",
         "categories": ["ai-ml", "completed"],
@@ -242,17 +253,6 @@
         "description": "A simple Neural Network using Keras, trained on YouTube comments for text sentiment classification. Dataset provided.",
         "link": "https://github.com/brandon-baek/Youtube-Comment-Sentiment-Detection-Project",
         "linkText": "View on GitHub"
-      },
-      {
-        "id": "homemade-delights",
-        "title": "Homemade Delights",
-        "categories": ["community", "web", "active"],
-        "displayTags": ["Community", "Web Development", "Active"],
-        "thumbnail": "Images/Project Thumbnails/homemadedelights.png",
-        "alt": "Homemade Delights Website",
-        "description": "Student-led project supporting mental health awareness through pastry sales. Website designed using Canva.",
-        "link": "https://homemade-delights.my.canva.site/",
-        "linkText": "View Website"
       }
     ]
   }
