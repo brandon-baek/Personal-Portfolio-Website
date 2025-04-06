@@ -244,6 +244,17 @@
         "linkText": "View on GitHub"
       },
       {
+        "id": "student-depression-eda",
+        "title": "Student Depression Prediction",
+        "categories": ["ai-ml", "data-science", "completed"],
+        "displayTags": ["AI/ML", "Data Science", "Completed"],
+        "thumbnail": "Images/Project Thumbnails/studentdepressionprediction.png",
+        "alt": "Student Depression Prediction",
+        "description": "In my Capstone project for an AI Course, I perform Exploratory Data Analysis and utilize Machine Learning (KNN) to classify a student with or without depression.",
+        "link": "https://medium.com/@wififished/predicting-student-depression-an-exploration-with-knn-c147b1e89921",
+        "linkText": "Read Article"
+      },
+      {
         "id": "youtube-sentiment",
         "title": "YouTube Sentiment Detection",
         "categories": ["ai-ml", "data-science", "completed"],
