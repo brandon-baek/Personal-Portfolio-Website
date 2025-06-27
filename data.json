@@ -202,12 +202,12 @@
       {
         "id": "portfolio-website",
         "title": "Portfolio Website",
-        "categories": ["web", "active"],
-        "displayTags": ["Web Development", "Active"],
+        "categories": ["web", "completed"],
+        "displayTags": ["Web Development", "Completed"],
         "thumbnail": "Images/Project Thumbnails/portfoliowebsite.png",
         "alt": "Portfolio Website",
         "description": "The very website you are looking at! Built with HTML, CSS, and JavaScript, featuring animations powered by GSAP.",
-        "link": "https://github.com/brandon-baek/Portfolio",
+        "link": "https://github.com/brandon-baek/Personal-Portfolio-Website",
         "linkText": "View on GitHub"
       },
       {
